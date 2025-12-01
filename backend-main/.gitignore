@@ -1,0 +1,77 @@
+# Ignore virtual environments
+venv/
+__pypackages__/
+env/
+.venv/
+
+# Some IDEs also create specific folders for virtual environments
+# .idea/
+.vscode/
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+
+# Ignore cache directories
+__pycache__/
+.cache/
+
+# Ignore logs and databases
+*.log
+*.sqlite
+*.sqlite3
+
+# Ignore environment variable files
+.env
+.env.*
+
+# Ignore coverage reports
+.coverage
+*.coveragerc
+
+# Ignore distribution / packaging files
+dist/
+build/
+eggs/
+*.egg-info/
+*.egg
+
+# Ignore test-related files
+nosetests.xml
+coverage.xml
+*.coveragerc
+
+# Ignore mypy and pylint configuration files
+mypy.ini
+pylint.rc
+
+# Ignore temporary or backup files
+*~
+*.swp
+*.bak
+*.tmp
+
+# Ignore IDE or editor specific files
+.idea/
+.vscode/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+#Ignore .vscode
+.vscode/
+
+test.db
+alembic.ini
+
+# Ignore Alembic because now it not used
+alembic/
+
+firebase_credentials.json
+
+# ⛔ Ignore the rms-front folder (you requested this)
+rms-front/
