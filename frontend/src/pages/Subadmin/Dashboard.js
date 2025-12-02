@@ -159,13 +159,11 @@ const SubadminDashboard = () => {
   });
   const [principleForm, setPrincipleForm] = useState({
     email: '',
-    password: '',
     name: '',
     phone: '',
     qualification: '',
     experience_years: '',
     specialization: '',
-    designation: '',
     office_phone: '',
     office_email: '',
     address: {
@@ -218,12 +216,13 @@ const SubadminDashboard = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [subjectsData, classesData, sessionsData, teachersData, studentsData] = await Promise.all([
+      const [subjectsData, classesData, sessionsData, teachersData, studentsData, principlesData] = await Promise.all([
         subadminService.getSubjects(user.school_id),
         subadminService.getClasses(user.school_id, true), // Include student count
         subadminService.getSessions(user.school_id),
         subadminService.getTeachers(user.school_id),
-        subadminService.getStudents(user.school_id)
+        subadminService.getStudents(user.school_id),
+        subadminService.getPrinciples(user.school_id)
       ]);
 
       setSubjects(subjectsData);
@@ -231,6 +230,7 @@ const SubadminDashboard = () => {
       setSessions(sessionsData);
       setTeachers(teachersData);
       setStudents(studentsData);
+      setPrinciples(principlesData || []);
       
       // Load school info if available
       if (user.school_id) {
@@ -616,13 +616,11 @@ const SubadminDashboard = () => {
     try {
       const principleData = {
         email: principleForm.email,
-        password: principleForm.password,
         name: principleForm.name,
         phone: principleForm.phone || null,
         qualification: principleForm.qualification || null,
         experience_years: principleForm.experience_years ? parseInt(principleForm.experience_years) : null,
         specialization: principleForm.specialization || null,
-        designation: principleForm.designation || null,
         office_phone: principleForm.office_phone || null,
         office_email: principleForm.office_email || null,
         address: (principleForm.address?.street || principleForm.address?.city || principleForm.address?.state || principleForm.address?.country || principleForm.address?.postal_code)
@@ -666,13 +664,11 @@ const SubadminDashboard = () => {
   const handleEditPrinciple = (principle) => {
     setPrincipleForm({
       email: principle.user?.email || principle.email || '',
-      password: '',
       name: principle.user?.name || principle.name || '',
       phone: principle.user?.phone || principle.phone || '',
       qualification: principle.qualification || '',
       experience_years: principle.experience_years || '',
       specialization: principle.specialization || '',
-      designation: principle.designation || '',
       office_phone: principle.office_phone || '',
       office_email: principle.office_email || '',
       address: {
@@ -695,7 +691,6 @@ const SubadminDashboard = () => {
         qualification: principleForm.qualification || null,
         experience_years: principleForm.experience_years ? parseInt(principleForm.experience_years) : null,
         specialization: principleForm.specialization || null,
-        designation: principleForm.designation || null,
         office_phone: principleForm.office_phone || null,
         office_email: principleForm.office_email || null,
         address: (principleForm.address?.street || principleForm.address?.city || principleForm.address?.state || principleForm.address?.country || principleForm.address?.postal_code)
@@ -1479,16 +1474,14 @@ const SubadminDashboard = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => {
+            onClick={() => {
             setPrincipleForm({
               email: '',
-              password: '',
               name: '',
               phone: '',
               qualification: '',
               experience_years: '',
               specialization: '',
-              designation: '',
               office_phone: '',
               office_email: '',
               address: {
@@ -3351,18 +3344,6 @@ const SubadminDashboard = () => {
                 disabled={principleDialog.mode === 'edit'}
               />
             </Grid>
-            {principleDialog.mode === 'create' && (
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Password *"
-                  type="password"
-                  value={principleForm.password}
-                  onChange={(e) => setPrincipleForm({ ...principleForm, password: e.target.value })}
-                  margin="normal"
-                />
-              </Grid>
-            )}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -3370,16 +3351,6 @@ const SubadminDashboard = () => {
                 value={principleForm.phone}
                 onChange={(e) => setPrincipleForm({ ...principleForm, phone: e.target.value })}
                 margin="normal"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Designation"
-                value={principleForm.designation}
-                onChange={(e) => setPrincipleForm({ ...principleForm, designation: e.target.value })}
-                margin="normal"
-                placeholder="e.g., Principal, Vice Principal"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -3503,7 +3474,7 @@ const SubadminDashboard = () => {
           <Button 
             onClick={principleDialog.mode === 'create' ? handleCreatePrinciple : handleUpdatePrinciple} 
             variant="contained"
-            disabled={!principleForm.name || !principleForm.email || (principleDialog.mode === 'create' && !principleForm.password)}
+            disabled={!principleForm.name || !principleForm.email}
           >
             {principleDialog.mode === 'create' ? 'Create' : 'Update'}
           </Button>

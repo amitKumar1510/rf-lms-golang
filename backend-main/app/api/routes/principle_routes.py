@@ -220,29 +220,23 @@ async def get_school_principles(
         result = []
 
         for principle in principles:
-            assigned_school = {
-                "id": principle.assigned_school.id,
-                "name": principle.assigned_school.name,
-                "address": principle.assigned_school.address
-            } if principle.assigned_school else None
+            # Safely access assigned_school relationship
+            assigned_school = None
+            if principle.assigned_school_id:
+                try:
+                    if principle.assigned_school:
+                        assigned_school = {
+                            "id": principle.assigned_school.id,
+                            "name": principle.assigned_school.name,
+                            "address": principle.assigned_school.address
+                        }
+                except Exception:
+                    assigned_school = None
 
-            principle_response = {
-                "id": principle.id,
-                "name": principle.user.name,
-                "email": principle.user.email,
-                "phone": principle.user.phone,
-                "user_id": principle.user_id,
-                "qualification": principle.qualification,
-                "experience_years": principle.experience_years,
-                "specialization": principle.specialization,
-                "designation": principle.designation,
-                "assigned_school_id": principle.assigned_school_id,
-                "assigned_school": assigned_school,
-                "office_phone": principle.office_phone,
-                "office_email": principle.office_email,
-                "created_at": principle.created_at,
-                "updated_at": principle.updated_at,
-                "user": {
+            # Safely access user relationship
+            user_data = None
+            if principle.user:
+                user_data = {
                     "id": principle.user.id,
                     "name": principle.user.name,
                     "email": principle.user.email,
@@ -256,6 +250,24 @@ async def get_school_principles(
                         "postal_code": principle.user.address.postal_code if principle.user.address else None,
                     } if principle.user.address else None
                 }
+
+            principle_response = {
+                "id": principle.id,
+                "name": principle.user.name if principle.user else None,
+                "email": principle.user.email if principle.user else None,
+                "phone": principle.user.phone if principle.user else None,
+                "user_id": principle.user_id,
+                "qualification": principle.qualification,
+                "experience_years": principle.experience_years,
+                "specialization": principle.specialization,
+                "designation": principle.designation,
+                "assigned_school_id": principle.assigned_school_id,
+                "assigned_school": assigned_school,
+                "office_phone": principle.office_phone,
+                "office_email": principle.office_email,
+                "created_at": principle.created_at,
+                "updated_at": principle.updated_at,
+                "user": user_data
             }
             result.append(PrincipleResponse(**principle_response))
 

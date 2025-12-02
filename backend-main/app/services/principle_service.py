@@ -21,8 +21,9 @@ class PrincipleService:
     @staticmethod
     def get_principles_by_school(db: Session, school_id: str) -> List[Principle]:
         """Get all principles for a school"""
-        return db.query(Principle).filter(
-            Principle.assigned_school_id == school_id
+        return db.query(Principle).join(User).filter(
+            User.school_id == school_id,
+            User.role == "principle"
         ).all()
 
     @staticmethod

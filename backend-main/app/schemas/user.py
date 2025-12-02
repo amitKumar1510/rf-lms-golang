@@ -347,13 +347,12 @@ class StudentUserCreate(BaseModel):
 class PrincipleUserCreate(BaseModel):
     """Combined schema for creating a principle user"""
     email: EmailStr
-    password: str
+    password: Optional[str] = "principle"  # Default password
     name: str
     phone: Optional[str] = None
     address: Optional[AddressBase] = None
     qualification: Optional[str] = None
     experience_years: Optional[int] = None
     specialization: Optional[str] = None
-    designation: Optional[str] = None
     office_phone: Optional[str] = None
     office_email: Optional[str] = None

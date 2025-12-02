@@ -5,6 +5,7 @@ from app.models.users import (
 )
 from app.models.teacher import Teacher, TeacherSubject
 from app.models.student import Student, StudentSubject
+from app.models.principle import Principle
 from app.core.hash import verify_password, hash_password
 from app.config.auth import create_access_token
 from app.core.utils_functions import generate_id
@@ -323,6 +324,34 @@ class UserService:
                     academic_year=class_subject.class_info.academic_year if class_subject.class_info else None
                 )
                 db.add(enrollment)
+
+        elif target_role == "principle" and user_data.get("principle_data"):
+            principle_data = user_data["principle_data"]
+            
+            # Use school_id from user_data (the user's school) as assigned_school_id
+            assigned_school_id = user_data.get("school_id") or principle_data.get("assigned_school_id")
+            
+            # Validate assigned school
+            if assigned_school_id:
+                school = db.query(School).filter(School.id == assigned_school_id).first()
+                if not school:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Invalid school ID"
+                    )
+            
+            principle = Principle(
+                id=generate_id(user_data["name"] + "_principle"),
+                user_id=user_id,
+                qualification=principle_data.get("qualification"),
+                experience_years=principle_data.get("experience_years"),
+                specialization=principle_data.get("specialization"),
+                designation=principle_data.get("designation") or "Principle",  # Default to "Principle" if None or empty
+                assigned_school_id=assigned_school_id,  # Use school_id from user_data
+                office_phone=principle_data.get("office_phone"),
+                office_email=principle_data.get("office_email")
+            )
+            db.add(principle)
 
         db.add(user)
         db.commit()

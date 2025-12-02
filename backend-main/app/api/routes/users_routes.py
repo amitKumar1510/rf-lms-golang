@@ -1546,9 +1546,12 @@ async def create_principle(
 
     try:
         # Prepare user data with principle_data
+        # Default password is "principle"
+        password = principle_data.password or "principle"
+        
         user_dict = {
             "email": principle_data.email,
-            "password": principle_data.password,
+            "password": password,
             "name": principle_data.name,
             "role": "principle",
             "school_id": school_id,
@@ -1558,7 +1561,7 @@ async def create_principle(
                 "qualification": principle_data.qualification,
                 "experience_years": principle_data.experience_years,
                 "specialization": principle_data.specialization,
-                "designation": principle_data.designation,
+                "designation": "Principle",  # Default designation
                 "assigned_school_id": school_id,
                 "office_phone": principle_data.office_phone,
                 "office_email": principle_data.office_email
