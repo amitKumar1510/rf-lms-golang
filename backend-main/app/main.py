@@ -7,6 +7,7 @@ from app.api.routes.teacher_routes import router as teacher_router
 from app.api.routes.student_routes import router as student_router
 from app.api.routes.principle_routes import router as principle_router
 from app.api.routes.parent_routes import router as parent_router
+from app.api.routes.content_routes import router as content_router
 from app.templates.send_credentials import MailTemplatesService
 from app.config.database import create_tables
 from sqlalchemy import orm
@@ -39,3 +40,4 @@ app.include_router(teacher_router, prefix="/api/teachers", tags=["Teachers"])
 app.include_router(student_router, prefix="/api/students", tags=["Students"])
 app.include_router(principle_router, prefix="/api/principles", tags=["Principles"])
 app.include_router(parent_router, prefix="/api/parents", tags=["Parents"])
+app.include_router(content_router, prefix="/api/content", tags=["Content"])

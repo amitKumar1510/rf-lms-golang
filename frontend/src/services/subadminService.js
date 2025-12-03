@@ -195,5 +195,89 @@ export const subadminService = {
   deletePrinciple: async (principleId) => {
     const response = await api.delete(`/api/principles/${principleId}`);
     return response.data;
+  },
+
+  // Content Management
+  getSubjectModules: async (subjectId) => {
+    const response = await api.get(`/api/content/subjects/${subjectId}/modules`);
+    return response.data;
+  },
+
+  createModule: async (subjectId, moduleData) => {
+    const response = await api.post(`/api/content/subjects/${subjectId}/modules`, moduleData);
+    return response.data;
+  },
+
+  updateModule: async (moduleId, moduleData) => {
+    const response = await api.put(`/api/content/modules/${moduleId}`, moduleData);
+    return response.data;
+  },
+
+  deleteModule: async (moduleId) => {
+    const response = await api.delete(`/api/content/modules/${moduleId}`);
+    return response.data;
+  },
+
+  createSubmodule: async (moduleId, submoduleData) => {
+    const response = await api.post(`/api/content/modules/${moduleId}/submodules`, submoduleData);
+    return response.data;
+  },
+
+  updateSubmodule: async (submoduleId, submoduleData) => {
+    const response = await api.put(`/api/content/submodules/${submoduleId}`, submoduleData);
+    return response.data;
+  },
+
+  deleteSubmodule: async (submoduleId) => {
+    const response = await api.delete(`/api/content/submodules/${submoduleId}`);
+    return response.data;
+  },
+
+  createContent: async (submoduleId, contentData) => {
+    const response = await api.post(`/api/content/submodules/${submoduleId}/contents`, contentData);
+    return response.data;
+  },
+
+  uploadContentFile: async (submoduleId, title, contentType, file) => {
+    console.log('Service received file:', file);
+    console.log('File details:', file ? {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified
+    } : 'No file');
+
+    const formData = new FormData();
+    if (file) {
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('content_type', contentType);
+      console.log('FormData created with file');
+
+      // Debug FormData contents
+      console.log('FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+    } else {
+      throw new Error('No file provided');
+    }
+    const response = await api.post(`/api/content/submodules/${submoduleId}/contents/upload`, formData);
+    return response.data;
+  },
+
+  updateContent: async (contentId, contentData) => {
+    const response = await api.put(`/api/content/contents/${contentId}`, contentData);
+    return response.data;
+  },
+
+  deleteContent: async (contentId) => {
+    const response = await api.delete(`/api/content/contents/${contentId}`);
+    return response.data;
+  },
+
+  getSubjectContentTree: async (subjectId) => {
+    const response = await api.get(`/api/content/subjects/${subjectId}/content-tree`);
+    return response.data;
   }
 };

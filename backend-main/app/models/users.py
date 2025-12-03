@@ -49,6 +49,7 @@ class Subject(Base):
     teachers = relationship("TeacherSubject", back_populates="subject")
     students = relationship("StudentSubject", back_populates="subject")
     class_subjects = relationship("ClassSubject", back_populates="subject")
+    modules = relationship("Module", back_populates="subject", cascade="all, delete-orphan")
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

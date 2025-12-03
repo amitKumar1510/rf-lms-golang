@@ -36,6 +36,9 @@ def create_tables():
     # Import class-related models
     from app.models.users import Class, ClassSubject, ClassSubjectTeacher, StudentSubjectEnrollment, AcademicSession
 
+    # Import content models (must be imported after Subject)
+    from app.models.content import Module, Submodule, Content
+
     # Import role-specific models
     from app.models.teacher import Teacher, TeacherSubject
     from app.models.student import Student, StudentSubject

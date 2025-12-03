@@ -232,7 +232,7 @@ class UserCreate(BaseModel):
             raise ValueError(f"school_id is required for {self.role} users")
         if self.role == "admin" and self.school_id:
             raise ValueError("school_id should not be provided for admin users")
-            return self
+        return self
 
 
 class UserUpdate(BaseModel):

@@ -85,6 +85,13 @@ const SubadminDashboard = () => {
   const [editClassSubjectDialog, setEditClassSubjectDialog] = useState({ open: false, classSubject: null, classId: null });
   const [principleDialog, setPrincipleDialog] = useState({ open: false, mode: 'create', principle: null });
   const [principleDetailsDialog, setPrincipleDetailsDialog] = useState({ open: false, principle: null });
+  const [subjectContentDialog, setSubjectContentDialog] = useState({ open: false, subject: null, modules: [] });
+  const [moduleDialog, setModuleDialog] = useState({ open: false, mode: 'create', module: null, subjectId: null });
+  const [submoduleDialog, setSubmoduleDialog] = useState({ open: false, mode: 'create', submodule: null, moduleId: null });
+  const [contentDialog, setContentDialog] = useState({ open: false, mode: 'create', content: null, submoduleId: null });
+  const [moduleForm, setModuleForm] = useState({ name: '', description: '', order_index: 0 });
+  const [submoduleForm, setSubmoduleForm] = useState({ name: '', description: '', order_index: 0 });
+  const [contentForm, setContentForm] = useState({ title: '', content_type: 'text', content_data: '', file: null });
 
   // Form data
   const [subjectForm, setSubjectForm] = useState({ name: '', code: '', description: '' });
@@ -350,6 +357,330 @@ const SubadminDashboard = () => {
       loadData();
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to update subject');
+    }
+  };
+
+  // Content Management Handlers
+  const handleViewSubjectContent = async (subject) => {
+    try {
+      const modules = await subadminService.getSubjectModules(subject.id);
+      setSubjectContentDialog({ open: true, subject, modules });
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to load subject content');
+    }
+  };
+
+  const handleCreateModule = async () => {
+    try {
+      const payload = {
+        name: moduleForm.name,
+        description: moduleForm.description || null,
+        order_index: parseInt(moduleForm.order_index) || 0
+      };
+      await subadminService.createModule(moduleDialog.subjectId, payload);
+      setSuccess('Module created successfully');
+      setModuleDialog({ open: false, mode: 'create', module: null, subjectId: null });
+      setModuleForm({ name: '', description: '', order_index: 0 });
+      // Refresh content
+      if (subjectContentDialog.subject) {
+        const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+        setSubjectContentDialog({ ...subjectContentDialog, modules });
+      }
+    } catch (err) {
+      let errorMsg = 'Failed to create module';
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.response?.data && typeof err.response.data === 'string') {
+        errorMsg = err.response.data;
+      }
+      setError(errorMsg);
+    }
+  };
+
+  const handleUpdateModule = async () => {
+    try {
+      await subadminService.updateModule(moduleDialog.module.id, moduleForm);
+      setSuccess('Module updated successfully');
+      setModuleDialog({ open: false, mode: 'create', module: null, subjectId: null });
+      setModuleForm({ name: '', description: '', order_index: 0 });
+      // Refresh content
+      if (subjectContentDialog.subject) {
+        const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+        setSubjectContentDialog({ ...subjectContentDialog, modules });
+      }
+    } catch (err) {
+      let errorMsg = 'Failed to update module';
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.response?.data && typeof err.response.data === 'string') {
+        errorMsg = err.response.data;
+      }
+      setError(errorMsg);
+    }
+  };
+
+  const handleDeleteModule = async (moduleId) => {
+    if (window.confirm('Are you sure you want to delete this module? All submodules and content will be deleted.')) {
+      try {
+        await subadminService.deleteModule(moduleId);
+        setSuccess('Module deleted successfully');
+        // Refresh content
+        if (subjectContentDialog.subject) {
+          const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+          setSubjectContentDialog({ ...subjectContentDialog, modules });
+        }
+      } catch (err) {
+        let errorMsg = 'Failed to delete module';
+        if (err.response?.data?.detail) {
+          if (Array.isArray(err.response.data.detail)) {
+            errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+          } else if (typeof err.response.data.detail === 'string') {
+            errorMsg = err.response.data.detail;
+          } else {
+            errorMsg = JSON.stringify(err.response.data.detail);
+          }
+        } else if (err.response?.data && typeof err.response.data === 'string') {
+          errorMsg = err.response.data;
+        }
+        setError(errorMsg);
+      }
+    }
+  };
+
+  const handleCreateSubmodule = async () => {
+    try {
+      const payload = {
+        name: submoduleForm.name,
+        description: submoduleForm.description || null,
+        order_index: parseInt(submoduleForm.order_index) || 0
+      };
+      await subadminService.createSubmodule(submoduleDialog.moduleId, payload);
+      setSuccess('Submodule created successfully');
+      setSubmoduleDialog({ open: false, mode: 'create', submodule: null, moduleId: null });
+      setSubmoduleForm({ name: '', description: '', order_index: 0 });
+      // Refresh content
+      if (subjectContentDialog.subject) {
+        const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+        setSubjectContentDialog({ ...subjectContentDialog, modules });
+      }
+    } catch (err) {
+      let errorMsg = 'Failed to create submodule';
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.response?.data && typeof err.response.data === 'string') {
+        errorMsg = err.response.data;
+      }
+      setError(errorMsg);
+    }
+  };
+
+  const handleUpdateSubmodule = async () => {
+    try {
+      await subadminService.updateSubmodule(submoduleDialog.submodule.id, submoduleForm);
+      setSuccess('Submodule updated successfully');
+      setSubmoduleDialog({ open: false, mode: 'create', submodule: null, moduleId: null });
+      setSubmoduleForm({ name: '', description: '', order_index: 0 });
+      // Refresh content
+      if (subjectContentDialog.subject) {
+        const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+        setSubjectContentDialog({ ...subjectContentDialog, modules });
+      }
+    } catch (err) {
+      let errorMsg = 'Failed to update submodule';
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.response?.data && typeof err.response.data === 'string') {
+        errorMsg = err.response.data;
+      }
+      setError(errorMsg);
+    }
+  };
+
+  const handleDeleteSubmodule = async (submoduleId) => {
+    if (window.confirm('Are you sure you want to delete this submodule? All content will be deleted.')) {
+      try {
+        await subadminService.deleteSubmodule(submoduleId);
+        setSuccess('Submodule deleted successfully');
+        // Refresh content
+        if (subjectContentDialog.subject) {
+          const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+          setSubjectContentDialog({ ...subjectContentDialog, modules });
+        }
+      } catch (err) {
+        let errorMsg = 'Failed to delete submodule';
+        if (err.response?.data?.detail) {
+          if (Array.isArray(err.response.data.detail)) {
+            errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+          } else if (typeof err.response.data.detail === 'string') {
+            errorMsg = err.response.data.detail;
+          } else {
+            errorMsg = JSON.stringify(err.response.data.detail);
+          }
+        } else if (err.response?.data && typeof err.response.data === 'string') {
+          errorMsg = err.response.data;
+        }
+        setError(errorMsg);
+      }
+    }
+  };
+
+  const handleCreateContent = async () => {
+    try {
+      console.log('Content form:', contentForm);
+      console.log('Content type:', contentForm.content_type);
+
+      if (contentForm.content_type === 'text') {
+        // Create text content
+        const payload = {
+          title: contentForm.title,
+          content_type: 'text',
+          content_data: contentForm.content_data,
+          order_index: 0
+        };
+        console.log('Creating text content with payload:', payload);
+        await subadminService.createContent(contentDialog.submoduleId, payload);
+      } else if (contentForm.file) {
+        // Upload file content
+        console.log('Uploading file:', contentForm.file);
+        console.log('File type:', typeof contentForm.file);
+        console.log('File properties:', contentForm.file ? {
+          name: contentForm.file.name,
+          size: contentForm.file.size,
+          type: contentForm.file.type
+        } : 'No file');
+
+        await subadminService.uploadContentFile(
+          contentDialog.submoduleId,
+          contentForm.title,
+          contentForm.content_type,
+          contentForm.file
+        );
+      } else {
+        console.log('No file provided for non-text content');
+        setError('Please provide content data or upload a file');
+        return;
+      }
+      setSuccess('Content created successfully');
+      setContentDialog({ open: false, mode: 'create', content: null, submoduleId: null });
+      setContentForm({ title: '', content_type: 'text', content_data: '', file: null });
+      // Refresh content
+      if (subjectContentDialog.subject) {
+        const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+        setSubjectContentDialog({ ...subjectContentDialog, modules });
+      }
+    } catch (err) {
+      let errorMsg = 'Failed to create content';
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.response?.data && typeof err.response.data === 'string') {
+        errorMsg = err.response.data;
+      }
+      setError(errorMsg);
+    }
+  };
+
+  const handleUpdateContent = async () => {
+    try {
+      const updateData = {
+        title: contentForm.title,
+        content_type: contentForm.content_type
+      };
+      if (contentForm.content_type === 'text') {
+        updateData.content_data = contentForm.content_data;
+      }
+      if (contentForm.file) {
+        // If new file uploaded, use upload endpoint
+        await subadminService.uploadContentFile(
+          contentDialog.submoduleId,
+          contentForm.title,
+          contentForm.content_type,
+          contentForm.file
+        );
+        // Delete old content
+        await subadminService.deleteContent(contentDialog.content.id);
+      } else {
+        await subadminService.updateContent(contentDialog.content.id, updateData);
+      }
+      setSuccess('Content updated successfully');
+      setContentDialog({ open: false, mode: 'create', content: null, submoduleId: null });
+      setContentForm({ title: '', content_type: 'text', content_data: '', file: null });
+      // Refresh content
+      if (subjectContentDialog.subject) {
+        const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+        setSubjectContentDialog({ ...subjectContentDialog, modules });
+      }
+    } catch (err) {
+      let errorMsg = 'Failed to update content';
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data.detail);
+        }
+      } else if (err.response?.data && typeof err.response.data === 'string') {
+        errorMsg = err.response.data;
+      }
+      setError(errorMsg);
+    }
+  };
+
+  const handleDeleteContent = async (contentId) => {
+    if (window.confirm('Are you sure you want to delete this content?')) {
+      try {
+        await subadminService.deleteContent(contentId);
+        setSuccess('Content deleted successfully');
+        // Refresh content
+        if (subjectContentDialog.subject) {
+          const modules = await subadminService.getSubjectModules(subjectContentDialog.subject.id);
+          setSubjectContentDialog({ ...subjectContentDialog, modules });
+        }
+      } catch (err) {
+        let errorMsg = 'Failed to delete content';
+        if (err.response?.data?.detail) {
+          if (Array.isArray(err.response.data.detail)) {
+            errorMsg = err.response.data.detail.map(d => d.msg || d.message || JSON.stringify(d)).join(', ');
+          } else if (typeof err.response.data.detail === 'string') {
+            errorMsg = err.response.data.detail;
+          } else {
+            errorMsg = JSON.stringify(err.response.data.detail);
+          }
+        } else if (err.response?.data && typeof err.response.data === 'string') {
+          errorMsg = err.response.data;
+        }
+        setError(errorMsg);
+      }
     }
   };
 
@@ -1005,6 +1336,15 @@ const SubadminDashboard = () => {
                   />
                 </TableCell>
                 <TableCell>
+                  <Tooltip title="Manage Content">
+                    <IconButton
+                      color="info"
+                      size="small"
+                      onClick={() => handleViewSubjectContent(subject)}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Tooltip>
                   <Tooltip title="Edit Subject">
                     <IconButton
                       color="primary"
@@ -3639,6 +3979,420 @@ const SubadminDashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setPrincipleDetailsDialog({ open: false, principle: null })}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Subject Content Management Dialog */}
+      <Dialog 
+        open={subjectContentDialog.open} 
+        onClose={() => setSubjectContentDialog({ open: false, subject: null, modules: [] })} 
+        maxWidth="lg" 
+        fullWidth
+      >
+        <DialogTitle>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h5">
+              Manage Content: {subjectContentDialog.subject?.name || ''}
+            </Typography>
+            <Button onClick={() => setSubjectContentDialog({ open: false, subject: null, modules: [] })}>
+              Close
+            </Button>
+          </Box>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box mb={2}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => {
+                setModuleForm({ name: '', description: '', order_index: 0 });
+                setModuleDialog({ open: true, mode: 'create', module: null, subjectId: subjectContentDialog.subject?.id });
+              }}
+            >
+              Add Module
+            </Button>
+          </Box>
+
+          {subjectContentDialog.modules.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="text.secondary">
+                No modules found. Click "Add Module" to create one.
+              </Typography>
+            </Box>
+          ) : (
+            subjectContentDialog.modules.map((module) => (
+              <Paper key={module.id} sx={{ mb: 2, p: 2 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                  <Typography variant="h6">
+                    {module.name}
+                    {module.description && (
+                      <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 1 }}>
+                        - {module.description}
+                      </Typography>
+                    )}
+                  </Typography>
+                  <Box>
+                    <Tooltip title="Add Submodule">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          setSubmoduleForm({ name: '', description: '', order_index: 0 });
+                          setSubmoduleDialog({ open: true, mode: 'create', submodule: null, moduleId: module.id });
+                        }}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Module">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          setModuleForm({ name: module.name, description: module.description || '', order_index: module.order_index || 0 });
+                          setModuleDialog({ open: true, mode: 'edit', module, subjectId: subjectContentDialog.subject?.id });
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Module">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteModule(module.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+
+                {module.submodules && module.submodules.length > 0 ? (
+                  module.submodules.map((submodule) => (
+                    <Box key={submodule.id} sx={{ ml: 3, mt: 2, mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {submodule.name}
+                          {submodule.description && (
+                            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 1 }}>
+                              - {submodule.description}
+                            </Typography>
+                          )}
+                        </Typography>
+                        <Box>
+                          <Tooltip title="Add Content">
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => {
+                                setContentForm({ title: '', content_type: 'text', content_data: '', file: null });
+                                setContentDialog({ open: true, mode: 'create', content: null, submoduleId: submodule.id });
+                              }}
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Edit Submodule">
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => {
+                                setSubmoduleForm({ name: submodule.name, description: submodule.description || '', order_index: submodule.order_index || 0 });
+                                setSubmoduleDialog({ open: true, mode: 'edit', submodule, moduleId: module.id });
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete Submodule">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeleteSubmodule(submodule.id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </Box>
+
+                      {submodule.contents && submodule.contents.length > 0 ? (
+                        <Box sx={{ ml: 2 }}>
+                          {submodule.contents.map((content) => (
+                            <Box key={content.id} sx={{ mb: 1, p: 1, bgcolor: 'white', borderRadius: 1, border: '1px solid', borderColor: 'grey.300' }}>
+                              <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Box>
+                                  <Typography variant="body2" fontWeight="medium">
+                                    {content.title}
+                                  </Typography>
+                                  <Chip label={content.content_type.toUpperCase()} size="small" sx={{ mt: 0.5 }} />
+                                  {content.file_name && (
+                                    <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                                      {content.file_name}
+                                    </Typography>
+                                  )}
+                                </Box>
+                                <Box>
+                                  {content.file_url && (
+                                    <Tooltip title="View File">
+                                      <IconButton
+                                        size="small"
+                                        color="info"
+                                        onClick={() => window.open(content.file_url, '_blank')}
+                                      >
+                                        <VisibilityIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                  )}
+                                  <Tooltip title="Edit Content">
+                                    <IconButton
+                                      size="small"
+                                      color="primary"
+                                      onClick={() => {
+                                        setContentForm({
+                                          title: content.title,
+                                          content_type: content.content_type,
+                                          content_data: content.content_data || '',
+                                          file: null
+                                        });
+                                        setContentDialog({ open: true, mode: 'edit', content, submoduleId: submodule.id });
+                                      }}
+                                    >
+                                      <EditIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Delete Content">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleDeleteContent(content.id)}
+                                    >
+                                      <DeleteIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Box>
+                              </Box>
+                              {content.content_type === 'text' && content.content_data && (
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                  {content.content_data.substring(0, 100)}
+                                  {content.content_data.length > 100 ? '...' : ''}
+                                </Typography>
+                              )}
+                            </Box>
+                          ))}
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ ml: 2, fontStyle: 'italic' }}>
+                          No content yet. Click "+" to add content.
+                        </Typography>
+                      )}
+                    </Box>
+                  ))
+                ) : (
+                  <Typography variant="body2" color="text.secondary" sx={{ ml: 3, fontStyle: 'italic' }}>
+                    No submodules yet. Click "+" to add a submodule.
+                  </Typography>
+                )}
+              </Paper>
+            ))
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSubjectContentDialog({ open: false, subject: null, modules: [] })}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Module Create/Edit Dialog */}
+      <Dialog 
+        open={moduleDialog.open} 
+        onClose={() => setModuleDialog({ open: false, mode: 'create', module: null, subjectId: null })} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          {moduleDialog.mode === 'create' ? 'Add New Module' : 'Edit Module'}
+        </DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            label="Module Name *"
+            value={moduleForm.name}
+            onChange={(e) => setModuleForm({ ...moduleForm, name: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Description"
+            multiline
+            rows={3}
+            value={moduleForm.description}
+            onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Order Index"
+            type="number"
+            value={moduleForm.order_index}
+            onChange={(e) => setModuleForm({ ...moduleForm, order_index: e.target.value })}
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModuleDialog({ open: false, mode: 'create', module: null, subjectId: null })}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={moduleDialog.mode === 'create' ? handleCreateModule : handleUpdateModule} 
+            variant="contained"
+            disabled={!moduleForm.name}
+          >
+            {moduleDialog.mode === 'create' ? 'Create' : 'Update'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Submodule Create/Edit Dialog */}
+      <Dialog 
+        open={submoduleDialog.open} 
+        onClose={() => setSubmoduleDialog({ open: false, mode: 'create', submodule: null, moduleId: null })} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          {submoduleDialog.mode === 'create' ? 'Add New Submodule' : 'Edit Submodule'}
+        </DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            label="Submodule Name *"
+            value={submoduleForm.name}
+            onChange={(e) => setSubmoduleForm({ ...submoduleForm, name: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Description"
+            multiline
+            rows={3}
+            value={submoduleForm.description}
+            onChange={(e) => setSubmoduleForm({ ...submoduleForm, description: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Order Index"
+            type="number"
+            value={submoduleForm.order_index}
+            onChange={(e) => setSubmoduleForm({ ...submoduleForm, order_index: parseInt(e.target.value) || 0 })}
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSubmoduleDialog({ open: false, mode: 'create', submodule: null, moduleId: null })}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={submoduleDialog.mode === 'create' ? handleCreateSubmodule : handleUpdateSubmodule} 
+            variant="contained"
+            disabled={!submoduleForm.name}
+          >
+            {submoduleDialog.mode === 'create' ? 'Create' : 'Update'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Content Create/Edit Dialog */}
+      <Dialog 
+        open={contentDialog.open} 
+        onClose={() => setContentDialog({ open: false, mode: 'create', content: null, submoduleId: null })} 
+        maxWidth="md" 
+        fullWidth
+      >
+        <DialogTitle>
+          {contentDialog.mode === 'create' ? 'Add New Content' : 'Edit Content'}
+        </DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            label="Content Title *"
+            value={contentForm.title}
+            onChange={(e) => setContentForm({ ...contentForm, title: e.target.value })}
+            margin="normal"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Content Type *</InputLabel>
+            <Select
+              value={contentForm.content_type}
+              label="Content Type *"
+              onChange={(e) => setContentForm({ ...contentForm, content_type: e.target.value, file: null })}
+            >
+              <MenuItem value="text">Text</MenuItem>
+              <MenuItem value="ppt">PowerPoint (PPT)</MenuItem>
+              <MenuItem value="pdf">PDF</MenuItem>
+              <MenuItem value="video">Video</MenuItem>
+              <MenuItem value="image">Image</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </Select>
+          </FormControl>
+
+          {contentForm.content_type === 'text' ? (
+            <TextField
+              fullWidth
+              label="Text Content *"
+              multiline
+              rows={6}
+              value={contentForm.content_data}
+              onChange={(e) => setContentForm({ ...contentForm, content_data: e.target.value })}
+              margin="normal"
+            />
+          ) : (
+            <Box sx={{ mt: 2 }}>
+              <input
+                accept={contentForm.content_type === 'pdf' ? '.pdf' : contentForm.content_type === 'ppt' ? '.ppt,.pptx' : contentForm.content_type === 'image' ? 'image/*' : contentForm.content_type === 'video' ? 'video/*' : '*'}
+                style={{ display: 'none' }}
+                id="content-file-upload"
+                type="file"
+                onChange={(e) => {
+                  const selectedFile = e.target.files[0];
+                  console.log('File selected:', selectedFile);
+                  setContentForm({ ...contentForm, file: selectedFile });
+                }}
+              />
+              <label htmlFor="content-file-upload">
+                <Button variant="outlined" component="span" fullWidth>
+                  {contentForm.file ? contentForm.file.name : 'Upload File'}
+                </Button>
+              </label>
+              {contentForm.file && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                  Selected: {contentForm.file.name} ({(contentForm.file.size / 1024).toFixed(2)} KB)
+                </Typography>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setContentDialog({ open: false, mode: 'create', content: null, submoduleId: null });
+            setContentForm({ title: '', content_type: 'text', content_data: '', file: null });
+          }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={contentDialog.mode === 'create' ? handleCreateContent : handleUpdateContent}
+            variant="contained"
+            disabled={
+              !contentForm.title ||
+              (contentForm.content_type === 'text' && !contentForm.content_data) ||
+              (contentForm.content_type !== 'text' && !contentForm.file)
+            }
+          >
+            {contentDialog.mode === 'create' ? 'Create' : 'Update'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
