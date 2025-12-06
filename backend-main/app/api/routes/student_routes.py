@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.schemas.student import StudentCreate, StudentUpdate, StudentResponse, StudentDashboardResponse
+from app.schemas.assignment import AssignmentSubmissionCreate
 from app.services.student_service import StudentService
+from app.services.assignment_service import AssignmentService
 from app.services.user_service import UserService
 from typing import List, Optional
 
@@ -593,4 +595,132 @@ async def get_student_attendance(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch attendance: {str(e)}"
+        )
+
+
+# ASSIGNMENT ROUTES FOR STUDENTS
+
+# GET - Get assignments available to student
+@router.get("/assignments", tags=["Student - Assignments"])
+async def get_student_assignments(
+    request: Request,
+    class_subject_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Get assignments available to the student"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can view their assignments"
+        )
+
+    try:
+        assignments = AssignmentService.get_assignments_for_student(db, current_user["user_id"], class_subject_id)
+        return assignments
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch assignments: {str(e)}"
+        )
+
+
+# GET - Get assignment details for student
+@router.get("/assignments/{assignment_id}", tags=["Student - Assignments"])
+async def get_student_assignment_details(
+    assignment_id: str,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get detailed assignment information for student"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can view assignment details"
+        )
+
+    try:
+        assignment = AssignmentService.get_assignment_details(db, assignment_id, current_user["user_id"], current_user["role"])
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignment not found or access denied"
+            )
+        return assignment
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch assignment details: {str(e)}"
+        )
+
+
+# POST - Submit assignment
+@router.post("/assignments/{assignment_id}/submit", tags=["Student - Assignments"])
+async def submit_assignment(
+    assignment_id: str,
+    submission_data: AssignmentSubmissionCreate,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Submit an assignment"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can submit assignments"
+        )
+
+    try:
+        submission = AssignmentService.submit_assignment(db, submission_data, current_user["user_id"])
+        return {
+            "id": submission.id,
+            "assignment_id": submission.assignment_id,
+            "submission_type": submission.submission_type,
+            "marks_obtained": submission.marks_obtained,
+            "total_marks": submission.total_marks,
+            "percentage": submission.percentage,
+            "grade": submission.grade,
+            "is_graded": submission.is_graded,
+            "submitted_at": submission.submitted_at.isoformat() if submission.submitted_at else None
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to submit assignment: {str(e)}"
+        )
+
+
+# GET - Get student's assignment statistics
+@router.get("/assignments/stats", tags=["Student - Assignments"])
+async def get_student_assignment_stats(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get assignment statistics for the student"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can view their assignment stats"
+        )
+
+    try:
+        stats = AssignmentService.get_student_assignment_stats(db, current_user["user_id"])
+        return stats
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch assignment statistics: {str(e)}"
         )

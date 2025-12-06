@@ -170,6 +170,116 @@ class TeacherService:
         } for ts in teacher_subjects]
 
     @staticmethod
+    def get_teacher_class_assignments(db: Session, teacher_user_id: str) -> List[dict]:
+        """Get teacher's class-subject assignments with class information"""
+        teacher = TeacherService.get_teacher_by_user_id(db, teacher_user_id)
+        if not teacher:
+            return []
+
+        # Import here to avoid circular imports
+        from app.models.users import ClassSubjectTeacher, ClassSubject
+
+        assignments = db.query(ClassSubjectTeacher).join(ClassSubject).filter(
+            ClassSubjectTeacher.teacher_id == teacher.id,
+            ClassSubjectTeacher.is_active == True,
+            ClassSubject.is_active == True
+        ).all()
+
+        result = []
+        for assignment in assignments:
+            class_subject = assignment.class_subject
+            class_info = class_subject.class_info
+            subject = class_subject.subject
+
+            result.append({
+                    "id": assignment.id,
+                    "class_subject_id": class_subject.id,
+                    "class_name": class_info.name,
+                    "subject_name": subject.name,
+                    "subject_code": subject.code,
+                    "grade_level": class_info.grade_level,
+                    "section": class_info.section,
+                    "periods_per_week": assignment.periods_per_week,
+                    "syllabus_completion": assignment.syllabus_completion,
+                    "is_compulsory": class_subject.is_compulsory,
+                    "credits": class_subject.credits
+                })
+
+        return result
+
+    @staticmethod
+    def get_teacher_workload(db: Session, teacher_user_id: str) -> dict:
+        """Get teacher's workload information including class assignments and homeroom classes"""
+        teacher = TeacherService.get_teacher_by_user_id(db, teacher_user_id)
+        if not teacher:
+            return {
+                "total_periods_per_week": 0,
+                "class_assignments": [],
+                "homeroom_classes": []
+            }
+
+        # Get class assignments with subject details
+        assignments = TeacherService.get_teacher_class_assignments(db, teacher_user_id)
+
+        # Group assignments by class
+        class_assignments = {}
+        total_periods = 0
+
+        for assignment in assignments:
+            class_key = assignment["class_subject_id"]
+            if class_key not in class_assignments:
+                class_assignments[class_key] = {
+                    "class_info": {
+                        "name": assignment["class_name"],
+                        "grade_level": assignment["grade_level"],
+                        "section": assignment["section"]
+                    },
+                    "subjects": []
+                }
+
+            class_assignments[class_key]["subjects"].append({
+                "subject": {
+                    "name": assignment["subject_name"],
+                    "code": assignment["subject_code"]
+                },
+                "periods_per_week": assignment["periods_per_week"],
+                "syllabus_completion": assignment["syllabus_completion"]
+            })
+
+            total_periods += assignment["periods_per_week"]
+
+        # Get homeroom classes (where teacher is class_teacher_id)
+        from app.models.users import Class
+        homeroom_classes = db.query(Class).filter(
+            Class.class_teacher_id == teacher.id,
+            Class.is_active == True,
+            Class.is_deleted == False
+        ).all()
+
+        homeroom_data = []
+        for cls in homeroom_classes:
+            homeroom_data.append({
+                "name": cls.name,
+                "grade_level": cls.grade_level,
+                "section": cls.section
+            })
+
+        # Get assignment creation statistics
+        from app.models.assignment import Assignment
+        total_assignments_created = db.query(Assignment).filter(
+            Assignment.teacher_id == teacher.id,
+            Assignment.is_active == True,
+            Assignment.is_deleted == False
+        ).count()
+
+        return {
+            "total_periods_per_week": total_periods,
+            "class_assignments": list(class_assignments.values()),
+            "homeroom_classes": homeroom_data,
+            "total_assignments_created": total_assignments_created
+        }
+
+    @staticmethod
     def delete_teacher(db: Session, teacher_id: str, deleted_by: str) -> bool:
         """Delete teacher profile (soft delete by deactivating user)"""
         teacher = TeacherService.get_teacher_by_id(db, teacher_id)

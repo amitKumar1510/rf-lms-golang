@@ -22,7 +22,20 @@ import {
   ListItem,
   ListItemText,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   School as SchoolIcon,
@@ -30,11 +43,13 @@ import {
   Grade as GradeIcon,
   Person as PersonIcon,
   Assessment as AssessmentIcon,
-  Event as EventIcon
+  Event as EventIcon,
+  Assignment as AssignmentIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import studentService from '../../services/studentService';
+import assignmentService from '../../services/assignmentService';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -715,6 +730,180 @@ const StudentDashboard = () => {
     );
   };
 
+  // Assignment related state
+  const [assignments, setAssignments] = useState([]);
+  const [assignmentsLoading, setAssignmentsLoading] = useState(false);
+  const [assignmentsError, setAssignmentsError] = useState('');
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
+  const [mcqAnswers, setMcqAnswers] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  // Load assignments when assignments tab is selected
+  useEffect(() => {
+    if (activeTab === 2) { // Assignments tab
+      loadAssignments();
+    }
+  }, [activeTab]);
+
+  const loadAssignments = async () => {
+    try {
+      setAssignmentsLoading(true);
+      const data = await assignmentService.getStudentAssignments();
+      setAssignments(data);
+      setAssignmentsError('');
+    } catch (error) {
+      console.error('Error loading assignments:', error);
+      setAssignmentsError('Failed to load assignments. Please try again.');
+    } finally {
+      setAssignmentsLoading(false);
+    }
+  };
+
+  const renderAssignmentsTab = () => {
+
+    const handleAttemptAssignment = (assignment) => {
+      setSelectedAssignment(assignment);
+      setMcqAnswers({});
+      setSelectedFile(null);
+      setShowAssignmentDialog(true);
+    };
+
+    const handleSubmitAssignment = async () => {
+      if (!selectedAssignment) return;
+
+      try {
+        let submissionData = {
+          assignment_id: selectedAssignment.id,
+          submission_type: selectedAssignment.assignment_type === 'mcq_quiz' ? 'mcq_answers' : 'file_upload'
+        };
+
+        if (selectedAssignment.assignment_type === 'mcq_quiz') {
+          submissionData.submitted_answers = mcqAnswers;
+        } else {
+          if (!selectedFile) {
+            alert('Please select a file to upload');
+            return;
+          }
+          // In a real implementation, you'd upload the file first and get the file path
+          // For now, we'll just simulate it
+          submissionData.file_path = 'uploaded_file_path';
+          submissionData.file_name = selectedFile.name;
+        }
+
+        await assignmentService.submitAssignment(selectedAssignment.id, submissionData);
+        setShowAssignmentDialog(false);
+        loadAssignments(); // Refresh to show updated status
+        alert('Assignment submitted successfully!');
+      } catch (error) {
+        console.error('Error submitting assignment:', error);
+        alert('Failed to submit assignment. Please try again.');
+      }
+    };
+
+    if (assignmentsLoading) {
+      return (
+        <Box display="flex" justifyContent="center" p={4}>
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    if (assignmentsError) {
+      return (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {assignmentsError}
+        </Alert>
+      );
+    }
+
+    return (
+      <Box>
+        <Typography variant="h5" gutterBottom>
+          My Assignments
+        </Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 3 }}>
+          View and submit your assignments
+        </Typography>
+
+        {assignments.length === 0 ? (
+          <Alert severity="info">
+            No assignments available at the moment.
+          </Alert>
+        ) : (
+          <Grid container spacing={3}>
+            {assignments.map((assignment) => (
+              <Grid item xs={12} md={6} lg={4} key={assignment.id}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {assignment.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {assignment.subject_name}
+                    </Typography>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <Chip
+                        label={assignment.assignment_type === 'mcq_quiz' ? 'MCQ Quiz' : 'File Upload'}
+                        size="small"
+                        color={assignment.assignment_type === 'mcq_quiz' ? 'primary' : 'secondary'}
+                      />
+                    </Box>
+                    <Typography variant="body2" gutterBottom>
+                      Total Marks: {assignment.total_marks}
+                    </Typography>
+                    {assignment.due_date && (
+                      <Typography variant="body2" color="text.secondary">
+                        Due: {new Date(assignment.due_date).toLocaleDateString()}
+                      </Typography>
+                    )}
+                    <Box mt={2}>
+                      {assignment.has_submitted ? (
+                        <Box>
+                          <Chip
+                            label={assignment.is_graded ? 'Graded' : 'Submitted'}
+                            color={assignment.is_graded ? 'success' : 'warning'}
+                            size="small"
+                          />
+                          {assignment.marks_obtained !== null && (
+                            <Typography variant="body2" sx={{ mt: 1 }}>
+                              Score: {assignment.marks_obtained}/{assignment.total_marks}
+                            </Typography>
+                          )}
+                        </Box>
+                      ) : (
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleAttemptAssignment(assignment)}
+                        >
+                          {assignment.assignment_type === 'mcq_quiz' ? 'Take Quiz' : 'Submit Assignment'}
+                        </Button>
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        {/* Assignment Dialog */}
+        <AssignmentDialog
+          open={showAssignmentDialog}
+          onClose={() => setShowAssignmentDialog(false)}
+          assignment={selectedAssignment}
+          onSubmit={handleSubmitAssignment}
+          mcqAnswers={mcqAnswers}
+          setMcqAnswers={setMcqAnswers}
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+        />
+      </Box>
+    );
+  };
+
   const renderAttendanceTab = () => {
     if (!dashboardData?.attendance) return null;
 
@@ -798,6 +987,7 @@ const StudentDashboard = () => {
         <Tabs value={activeTab} onChange={handleTabChange} aria-label="student dashboard tabs">
           <Tab label="Profile" />
           <Tab label="Subjects" />
+          <Tab label="Assignments" />
           <Tab label="Grades" />
           <Tab label="Attendance" />
         </Tabs>
@@ -815,13 +1005,166 @@ const StudentDashboard = () => {
             <>
               {activeTab === 0 && renderProfileTab()}
               {activeTab === 1 && renderSubjectsTab()}
-              {activeTab === 2 && renderGradesTab()}
-              {activeTab === 3 && renderAttendanceTab()}
+              {activeTab === 2 && renderAssignmentsTab()}
+              {activeTab === 3 && renderGradesTab()}
+              {activeTab === 4 && renderAttendanceTab()}
             </>
           )}
         </Box>
       </Paper>
     </Container>
+  );
+};
+
+// Assignment Dialog Component
+const AssignmentDialog = ({
+  open,
+  onClose,
+  assignment,
+  onSubmit,
+  mcqAnswers,
+  setMcqAnswers,
+  selectedFile,
+  setSelectedFile
+}) => {
+  if (!assignment) return null;
+
+  const handleMcqAnswerChange = (questionId, answer) => {
+    setMcqAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const isMcqComplete = () => {
+    if (assignment.assignment_type !== 'mcq_quiz') return true;
+    return assignment.questions?.every(q => mcqAnswers[q.id]) || false;
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>
+        {assignment.assignment_type === 'mcq_quiz' ? 'Take Quiz' : 'Submit Assignment'}: {assignment.title}
+      </DialogTitle>
+      <DialogContent>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="body1" gutterBottom>
+            {assignment.description}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total Marks: {assignment.total_marks} | Subject: {assignment.subject_name}
+          </Typography>
+          {assignment.due_date && (
+            <Typography variant="body2" color="error">
+              Due Date: {new Date(assignment.due_date).toLocaleDateString()}
+            </Typography>
+          )}
+        </Box>
+
+        {assignment.assignment_type === 'mcq_quiz' ? (
+          // MCQ Quiz Interface
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Questions
+            </Typography>
+            {assignment.questions?.map((question, index) => (
+              <Card key={question.id} sx={{ mb: 2, p: 2 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  {index + 1}. {question.question_text}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  ({question.marks} marks)
+                </Typography>
+
+                {question.question_type === 'multiple_choice' && (
+                  <RadioGroup
+                    value={mcqAnswers[question.id] || ''}
+                    onChange={(e) => handleMcqAnswerChange(question.id, e.target.value)}
+                  >
+                    {question.options?.map((option, optIndex) => (
+                      <FormControlLabel
+                        key={optIndex}
+                        value={option}
+                        control={<Radio />}
+                        label={option}
+                      />
+                    ))}
+                  </RadioGroup>
+                )}
+
+                {question.question_type === 'true_false' && (
+                  <RadioGroup
+                    value={mcqAnswers[question.id] || ''}
+                    onChange={(e) => handleMcqAnswerChange(question.id, e.target.value)}
+                  >
+                    <FormControlLabel value="true" control={<Radio />} label="True" />
+                    <FormControlLabel value="false" control={<Radio />} label="False" />
+                  </RadioGroup>
+                )}
+
+                {question.question_type === 'short_answer' && (
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    placeholder="Enter your answer"
+                    value={mcqAnswers[question.id] || ''}
+                    onChange={(e) => handleMcqAnswerChange(question.id, e.target.value)}
+                  />
+                )}
+              </Card>
+            ))}
+          </Box>
+        ) : (
+          // File Upload Interface
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Upload Your Assignment
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Please upload your assignment file (PDF, DOC, DOCX, etc.)
+            </Typography>
+
+            <input
+              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+              style={{ display: 'none' }}
+              id="assignment-file"
+              type="file"
+              onChange={handleFileChange}
+            />
+            <label htmlFor="assignment-file">
+              <Button variant="outlined" component="span" fullWidth sx={{ mb: 2 }}>
+                Choose File
+              </Button>
+            </label>
+
+            {selectedFile && (
+              <Typography variant="body2">
+                Selected: {selectedFile.name}
+              </Typography>
+            )}
+          </Box>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          onClick={onSubmit}
+          variant="contained"
+          disabled={
+            (assignment.assignment_type === 'mcq_quiz' && !isMcqComplete()) ||
+            (assignment.assignment_type === 'file_upload' && !selectedFile)
+          }
+        >
+          Submit {assignment.assignment_type === 'mcq_quiz' ? 'Quiz' : 'Assignment'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

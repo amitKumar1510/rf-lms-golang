@@ -183,17 +183,17 @@ export const subadminService = {
   },
 
   getPrinciples: async (schoolId) => {
-    const response = await api.get(`/api/principles/school/${schoolId}`);
+    const response = await api.get(`/api/principle/school/${schoolId}`);
     return response.data;
   },
 
   updatePrinciple: async (principleId, principleData) => {
-    const response = await api.put(`/api/principles/${principleId}`, principleData);
+    const response = await api.put(`/api/principle/${principleId}`, principleData);
     return response.data;
   },
 
   deletePrinciple: async (principleId) => {
-    const response = await api.delete(`/api/principles/${principleId}`);
+    const response = await api.delete(`/api/principle/${principleId}`);
     return response.data;
   },
 

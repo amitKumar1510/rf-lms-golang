@@ -43,6 +43,9 @@ def create_tables():
     from app.models.grade import StudentGrade
     from app.models.attendance import StudentAttendance
 
+    # Import assignment models
+    from app.models.assignment import Assignment, AssignmentQuestion, AssignmentSubmission
+
     # Import role-specific models
     from app.models.teacher import Teacher, TeacherSubject
     from app.models.student import Student, StudentSubject
