@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func, case
 from fastapi import HTTPException, status
 from app.models.principle import Principle
-from app.models.users import User, School
+from app.models.users import User, School, Class
+from app.models.attendance import StudentAttendance
 from app.services.user_service import UserService
 from app.core.utils_functions import generate_id
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class PrincipleService:
@@ -157,3 +159,59 @@ class PrincipleService:
         db.commit()
 
         return True
+
+    @staticmethod
+    def get_school_dashboard_stats(db: Session, school_id: str) -> Dict:
+        """Get dashboard statistics for a school (principle view)"""
+        # Get total students
+        total_students = db.query(User).filter(
+            User.school_id == school_id,
+            User.role == "student",
+            User.is_active == True
+        ).count()
+
+        # Get total teachers
+        total_teachers = db.query(User).filter(
+            User.school_id == school_id,
+            User.role == "teacher",
+            User.is_active == True
+        ).count()
+
+        # Get total classes (using Class model)
+        total_classes = db.query(Class).filter(
+            Class.school_id == school_id,
+            Class.is_active == True
+        ).count()
+
+        # Calculate average attendance
+        # Get attendance data for current month (simplified - you might want to adjust this logic)
+        from app.models.student import Student
+        attendance_stats = db.query(
+            func.avg(
+                case((StudentAttendance.status == "present", 100), else_=0)
+            ).label("avg_attendance")
+        ).join(Student, StudentAttendance.student_id == Student.id).join(User, Student.user_id == User.id).filter(
+            User.school_id == school_id,
+            User.is_active == True
+        ).first()
+
+        average_attendance = round(attendance_stats.avg_attendance or 0, 1)
+
+        return {
+            "total_students": total_students,
+            "total_teachers": total_teachers,
+            "total_classes": total_classes,
+            "average_attendance": average_attendance
+        }
+
+    @staticmethod
+    def get_school_departments_stats(db: Session, school_id: str) -> List[Dict]:
+        """Get department-wise statistics for a school"""
+        # This would require more complex queries based on your subject/department structure
+        # For now, returning basic structure that can be enhanced later
+        departments = []
+
+        # You could implement this based on Subject model or Class-Subject relationships
+        # For demonstration, returning empty list that can be populated later
+
+        return departments

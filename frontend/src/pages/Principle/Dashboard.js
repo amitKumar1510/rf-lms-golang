@@ -27,6 +27,7 @@ import {
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
+import principleService from '../../services/principleService';
 
 const PrincipleDashboard = () => {
   const { user } = useAuth();
@@ -36,23 +37,34 @@ const PrincipleDashboard = () => {
 
   // Mock data - in real app, fetch from API
   const [schoolStats, setSchoolStats] = useState({
-    total_students: 1250,
-    total_teachers: 85,
-    total_classes: 45,
-    average_attendance: 92
+    total_students: 0,
+    total_teachers: 0,
+    total_classes: 0,
+    average_attendance: 0
   });
 
   const [departments, setDepartments] = useState([
-    { name: 'Mathematics', students: 420, teachers: 12, avg_grade: 'A-' },
-    { name: 'English', students: 380, teachers: 10, avg_grade: 'A' },
-    { name: 'Science', students: 450, teachers: 15, avg_grade: 'B+' }
+    { name: 'Mathematics', teachers: 12},
+    { name: 'English',  teachers: 10, },
+    { name: 'Science',  teachers: 15, }
   ]);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const stats = await principleService.getDashboardStats();
+        setSchoolStats(stats);
+        setError('');
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   const handleTabChange = (event, newValue) => {
@@ -69,9 +81,9 @@ const PrincipleDashboard = () => {
               <Typography variant="h6">Total Students</Typography>
             </Box>
             <Typography variant="h4">{schoolStats.total_students.toLocaleString()}</Typography>
-            <Typography variant="body2" color="success.main">
+            {/* <Typography variant="body2" color="success.main">
               +5% from last year
-            </Typography>
+            </Typography> */}
           </CardContent>
         </Card>
       </Grid>
@@ -84,9 +96,9 @@ const PrincipleDashboard = () => {
               <Typography variant="h6">Total Teachers</Typography>
             </Box>
             <Typography variant="h4">{schoolStats.total_teachers}</Typography>
-            <Typography variant="body2" color="success.main">
+            {/* <Typography variant="body2" color="success.main">
               +2 new this year
-            </Typography>
+            </Typography> */}
           </CardContent>
         </Card>
       </Grid>
@@ -99,9 +111,9 @@ const PrincipleDashboard = () => {
               <Typography variant="h6">Total Classes</Typography>
             </Box>
             <Typography variant="h4">{schoolStats.total_classes}</Typography>
-            <Typography variant="body2" color="text.secondary">
+            {/* <Typography variant="body2" color="text.secondary">
               All grades covered
-            </Typography>
+            </Typography> */}
           </CardContent>
         </Card>
       </Grid>
@@ -114,9 +126,9 @@ const PrincipleDashboard = () => {
               <Typography variant="h6">Avg Attendance</Typography>
             </Box>
             <Typography variant="h4">{schoolStats.average_attendance}%</Typography>
-            <Typography variant="body2" color="success.main">
+            {/* <Typography variant="body2" color="success.main">
               Above target
-            </Typography>
+            </Typography> */}
           </CardContent>
         </Card>
       </Grid>
@@ -130,37 +142,15 @@ const PrincipleDashboard = () => {
           <TableHead>
             <TableRow>
               <TableCell>Department</TableCell>
-              <TableCell align="right">Students</TableCell>
+              {/* <TableCell align="right">Students</TableCell> */}
               <TableCell align="right">Teachers</TableCell>
-              <TableCell align="center">Avg Grade</TableCell>
-              <TableCell align="right">Performance</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {departments.map((dept, index) => (
               <TableRow key={index}>
                 <TableCell>{dept.name}</TableCell>
-                <TableCell align="right">{dept.students}</TableCell>
                 <TableCell align="right">{dept.teachers}</TableCell>
-                <TableCell align="center">
-                  <Chip
-                    label={dept.avg_grade}
-                    color={
-                      dept.avg_grade.startsWith('A') ? 'success' :
-                      dept.avg_grade.startsWith('B') ? 'primary' :
-                      'warning'
-                    }
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <Box display="flex" alignItems="center" justifyContent="flex-end">
-                    <TrendingUpIcon color="success" sx={{ mr: 1 }} />
-                    <Typography variant="body2" color="success.main">
-                      +8%
-                    </Typography>
-                  </Box>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>

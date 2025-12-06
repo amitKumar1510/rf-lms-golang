@@ -73,3 +73,65 @@ class StudentSubjectResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Student Dashboard Schemas
+class StudentGradeResponse(BaseModel):
+    id: str
+    subject: dict  # Subject details
+    academic_year: str
+    midterm_marks: Optional[float] = None
+    final_marks: Optional[float] = None
+    grade: Optional[str] = None
+    attendance_percentage: Optional[float] = None
+    status: str  # enrolled, completed, etc.
+    teacher: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class StudentSubjectInfo(BaseModel):
+    id: str
+    subject_id: str
+    subject: dict  # Subject details (name, code, description)
+    teacher: Optional[dict] = None  # Teacher details (name, email, qualification)
+    is_elective: bool
+    is_compulsory: Optional[bool] = None
+    credits: Optional[int] = None
+    academic_year: Optional[str] = None
+    enrolled_at: Optional[datetime] = None
+
+
+class StudentAttendanceSubject(BaseModel):
+    name: str
+    percentage: float
+    present: int
+    total: int
+
+
+class StudentAttendanceResponse(BaseModel):
+    overall: float
+    subjects: List[StudentAttendanceSubject]
+
+
+class StudentDashboardProfile(BaseModel):
+    id: str
+    name: str
+    email: str
+    roll_number: Optional[str] = None
+    class_name: Optional[str] = None
+    date_of_birth: Optional[datetime] = None
+    gender: Optional[str] = None
+    blood_group: Optional[str] = None
+    admission_date: Optional[datetime] = None
+    guardian_name: Optional[str] = None
+    guardian_phone: Optional[str] = None
+    address: Optional[dict] = None  # Address details
+
+
+class StudentDashboardResponse(BaseModel):
+    profile: StudentDashboardProfile
+    subjects: List[StudentSubjectInfo]
+    grades: List[StudentGradeResponse]
+    attendance: StudentAttendanceResponse
+    quick_stats: dict  # overall_attendance, current_gpa, etc.

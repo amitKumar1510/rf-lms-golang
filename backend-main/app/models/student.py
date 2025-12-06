@@ -30,6 +30,8 @@ class Student(Base):
     # Relationships
     subjects = relationship("StudentSubject", back_populates="student")
     subject_enrollments = relationship("StudentSubjectEnrollment", back_populates="student")
+    grades = relationship("StudentGrade", back_populates="student")
+    attendance = relationship("StudentAttendance", back_populates="student")
 
     is_active = Column(Boolean, default=True)
     is_deleted = Column(Boolean, default=False)

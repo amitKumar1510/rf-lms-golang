@@ -1,11 +1,15 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from fastapi import HTTPException, status
 from app.models.student import Student, StudentSubject
-from app.models.users import User, Class, Address, StudentSubjectEnrollment, ClassSubject
+from app.models.users import User, Class, Address, StudentSubjectEnrollment, ClassSubject, Subject
+from app.models.teacher import Teacher
+from app.models.grade import StudentGrade
+from app.models.attendance import StudentAttendance
 from app.core.utils_functions import generate_id
 from app.services.user_service import UserService
-from typing import List, Optional
+from typing import List, Optional, Dict
+from datetime import datetime
 
 
 class StudentService:
@@ -294,3 +298,262 @@ class StudentService:
         db.commit()
 
         return True
+
+    @staticmethod
+    def get_student_dashboard_data(db: Session, user_id: str) -> Dict:
+        """Get comprehensive dashboard data for a student"""
+        student = StudentService.get_student_by_user_id(db, user_id)
+        if not student:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student profile not found"
+            )
+
+        # Get profile data
+        profile = {
+            "id": student.id,
+            "name": student.user.name,
+            "email": student.user.email,
+            "roll_number": student.roll_number,
+            "class_name": student.class_info.name if student.class_info else None,
+            "date_of_birth": student.date_of_birth,
+            "gender": student.gender,
+            "blood_group": student.blood_group,
+            "admission_date": student.admission_date,
+            "guardian_name": student.guardian_name,
+            "guardian_phone": student.guardian_phone,
+            "address": {
+                "street": student.user.address.street if student.user.address else None,
+                "city": student.user.address.city if student.user.address else None,
+                "state": student.user.address.state if student.user.address else None,
+                "country": student.user.address.country if student.user.address else None,
+                "postal_code": student.user.address.postal_code if student.user.address else None,
+            } if student.user.address else None
+        }
+
+        # Get subjects data with teacher information
+        subjects = StudentService.get_student_subjects_with_teachers(db, student.id)
+
+        # Get grades data
+        grades = StudentService.get_student_grades(db, student.id)
+
+        # Get attendance data
+        attendance = StudentService.get_student_attendance(db, student.id)
+
+        # Calculate quick stats
+        quick_stats = StudentService.calculate_student_quick_stats(db, student.id, grades, attendance)
+
+        return {
+            "profile": profile,
+            "subjects": subjects,
+            "grades": grades,
+            "attendance": attendance,
+            "quick_stats": quick_stats
+        }
+
+    @staticmethod
+    def get_student_grades(db: Session, student_id: str) -> List[Dict]:
+        """Get all grades for a student"""
+        # Import the ClassSubjectTeacher model
+        from app.models.users import ClassSubjectTeacher
+
+        # Get grades from StudentGrade table
+        grades_query = db.query(StudentGrade).filter(
+            StudentGrade.student_id == student_id,
+            StudentGrade.is_active == True
+        ).join(ClassSubject, StudentGrade.class_subject_id == ClassSubject.id).join(
+            Subject, ClassSubject.subject_id == Subject.id
+        ).all()
+
+        grades = []
+        for grade in grades_query:
+            # Get teacher for this class subject (first active teacher)
+            teacher_info = None
+            class_subject_teacher = db.query(ClassSubjectTeacher).filter(
+                ClassSubjectTeacher.class_subject_id == grade.class_subject_id,
+                ClassSubjectTeacher.is_active == True
+            ).first()
+
+            if class_subject_teacher and class_subject_teacher.teacher:
+                teacher_info = class_subject_teacher.teacher.user.name
+
+            grades.append({
+                "id": grade.id,
+                "subject": {
+                    "id": grade.class_subject.subject.id,
+                    "name": grade.class_subject.subject.name,
+                    "code": grade.class_subject.subject.code
+                },
+                "academic_year": grade.academic_year,
+                "midterm_marks": grade.midterm_marks,
+                "final_marks": grade.final_marks,
+                "grade": grade.grade,
+                "attendance_percentage": grade.attendance_percentage,
+                "status": grade.status,
+                "teacher": teacher_info,
+                "created_at": grade.created_at,
+                "updated_at": grade.updated_at
+            })
+
+        return grades
+
+    @staticmethod
+    def get_student_subjects_with_teachers(db: Session, student_id: str) -> List[Dict]:
+        """Get student's subjects with teacher information"""
+        from app.models.users import ClassSubjectTeacher
+
+        # Get student
+        student = StudentService.get_student_by_id(db, student_id)
+        if not student:
+            return []
+
+        subjects_list = []
+
+        # Get subjects from StudentSubjectEnrollment (class-based enrollment)
+        enrollments = db.query(StudentSubjectEnrollment).filter(
+            StudentSubjectEnrollment.student_id == student_id,
+            StudentSubjectEnrollment.is_active == True,
+            StudentSubjectEnrollment.is_deleted == False
+        ).all()
+
+        for enrollment in enrollments:
+            if enrollment.class_subject and enrollment.class_subject.subject:
+                subject_info = enrollment.class_subject.subject
+                class_subject = enrollment.class_subject
+
+                # Get teacher for this class subject
+                teacher_info = None
+                class_subject_teacher = db.query(ClassSubjectTeacher).filter(
+                    ClassSubjectTeacher.class_subject_id == class_subject.id,
+                    ClassSubjectTeacher.is_active == True
+                ).first()
+
+                if class_subject_teacher and class_subject_teacher.teacher:
+                    teacher = class_subject_teacher.teacher
+                    teacher_info = {
+                        "id": teacher.id,
+                        "name": teacher.user.name if teacher.user else None,
+                        "email": teacher.user.email if teacher.user else None,
+                        "qualification": teacher.qualification,
+                        "specialization": teacher.specialization
+                    }
+
+                subjects_list.append({
+                    "id": enrollment.id,
+                    "subject_id": subject_info.id,
+                    "subject": {
+                        "id": subject_info.id,
+                        "name": subject_info.name,
+                        "code": subject_info.code,
+                        "description": getattr(subject_info, 'description', None)
+                    },
+                    "teacher": teacher_info,
+                    "is_elective": not class_subject.is_compulsory if class_subject.is_compulsory is not None else False,
+                    "is_compulsory": class_subject.is_compulsory,
+                    "credits": class_subject.credits,
+                    "academic_year": enrollment.academic_year or getattr(class_subject.class_info, 'academic_year', None) if class_subject.class_info else None,
+                    "enrolled_at": enrollment.enrollment_date
+                })
+
+        return subjects_list
+
+    @staticmethod
+    def get_student_attendance(db: Session, student_id: str) -> Dict:
+        """Get attendance data for a student"""
+        # Get attendance records for current academic year
+        current_year = datetime.now().year
+        academic_year = f"{current_year}-{current_year + 1}"
+
+        # Get student's enrolled subjects first
+        student = StudentService.get_student_by_id(db, student_id)
+        if not student:
+            return {"overall": 0, "subjects": []}
+
+        # Get all class subjects the student is enrolled in
+        enrolled_subjects = []
+        enrollments = db.query(StudentSubjectEnrollment).filter(
+            StudentSubjectEnrollment.student_id == student_id,
+            StudentSubjectEnrollment.is_active == True,
+            StudentSubjectEnrollment.is_deleted == False
+        ).all()
+
+        for enrollment in enrollments:
+            if enrollment.class_subject and enrollment.class_subject.subject:
+                enrolled_subjects.append({
+                    "id": enrollment.class_subject.subject.id,
+                    "name": enrollment.class_subject.subject.name,
+                    "class_subject_id": enrollment.class_subject.id
+                })
+
+        # Calculate overall attendance from all attendance records
+        total_classes = db.query(func.count(StudentAttendance.id)).filter(
+            StudentAttendance.student_id == student_id,
+            StudentAttendance.academic_year == academic_year,
+            StudentAttendance.is_active == True
+        ).scalar()
+
+        present_classes = db.query(func.count(StudentAttendance.id)).filter(
+            StudentAttendance.student_id == student_id,
+            StudentAttendance.academic_year == academic_year,
+            StudentAttendance.status == "present",
+            StudentAttendance.is_active == True
+        ).scalar()
+
+        overall_percentage = (present_classes / total_classes * 100) if total_classes > 0 else 0
+
+        # Get subject-wise attendance for enrolled subjects
+        from sqlalchemy import case
+        subjects = []
+
+        for enrolled_subject in enrolled_subjects:
+            # Try to get attendance data for this specific subject
+            subject_attendance = db.query(
+                func.count(StudentAttendance.id).label('total'),
+                func.sum(case((StudentAttendance.status == "present", 1), else_=0)).label('present')
+            ).filter(
+                StudentAttendance.student_id == student_id,
+                StudentAttendance.class_subject_id == enrolled_subject["class_subject_id"],
+                StudentAttendance.academic_year == academic_year,
+                StudentAttendance.is_active == True
+            ).first()
+
+            total = subject_attendance.total or 0
+            present = subject_attendance.present or 0
+            percentage = (present / total * 100) if total > 0 else 0
+
+            subjects.append({
+                "name": enrolled_subject["name"],
+                "percentage": round(percentage, 1),
+                "present": int(present),
+                "total": int(total)
+            })
+
+        return {
+            "overall": round(overall_percentage, 1),
+            "subjects": subjects,
+            "academic_year": academic_year
+        }
+
+    @staticmethod
+    def calculate_student_quick_stats(db: Session, student_id: str, grades: List[Dict], attendance: Dict) -> Dict:
+        """Calculate quick statistics for student dashboard"""
+        # Calculate GPA from grades
+        grade_points = {"A+": 4.0, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7,
+                       "C+": 2.3, "C": 2.0, "C-": 1.7, "D+": 1.3, "D": 1.0, "F": 0.0}
+
+        total_points = 0
+        total_subjects = 0
+
+        for grade_data in grades:
+            if grade_data.get("grade") and grade_data["grade"] in grade_points:
+                total_points += grade_points[grade_data["grade"]]
+                total_subjects += 1
+
+        current_gpa = round(total_points / total_subjects, 2) if total_subjects > 0 else 0
+
+        return {
+            "overall_attendance": attendance["overall"],
+            "current_gpa": current_gpa,
+            "total_subjects": total_subjects,
+            "completed_subjects": len([g for g in grades if g.get("status") == "completed"])
+        }

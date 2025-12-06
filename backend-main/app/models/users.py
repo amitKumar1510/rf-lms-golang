@@ -102,6 +102,8 @@ class ClassSubject(Base):
     subject = relationship("Subject", back_populates="class_subjects")
     teachers = relationship("ClassSubjectTeacher", back_populates="class_subject")
     student_enrollments = relationship("StudentSubjectEnrollment", back_populates="class_subject")
+    grades = relationship("StudentGrade", back_populates="class_subject")
+    attendance = relationship("StudentAttendance", back_populates="class_subject")
 
     # Additional info
     is_compulsory = Column(Boolean, default=True)  # Compulsory or elective

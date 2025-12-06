@@ -1,6 +1,7 @@
 from fastapi import FastAPI,Query, HTTPException, status,Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.api import APIMiddleware
 from app.api.routes import users_routes
 from app.api.routes.teacher_routes import router as teacher_router
@@ -11,8 +12,12 @@ from app.api.routes.content_routes import router as content_router
 from app.templates.send_credentials import MailTemplatesService
 from app.config.database import create_tables
 from sqlalchemy import orm
+import os
 
 app = FastAPI()
+
+# Mount static files directory for serving uploaded content
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(APIMiddleware)
 app.add_middleware(
@@ -38,6 +43,6 @@ async def send_custom_email():
 app.include_router(users_routes.router, prefix="/api/users", tags=["Users"])
 app.include_router(teacher_router, prefix="/api/teachers", tags=["Teachers"])
 app.include_router(student_router, prefix="/api/students", tags=["Students"])
-app.include_router(principle_router, prefix="/api/principles", tags=["Principles"])
+app.include_router(principle_router, prefix="/api/principle", tags=["Principle"])
 app.include_router(parent_router, prefix="/api/parents", tags=["Parents"])
 app.include_router(content_router, prefix="/api/content", tags=["Content"])

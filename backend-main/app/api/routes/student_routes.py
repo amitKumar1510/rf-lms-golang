@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.config.database import get_db
-from app.schemas.student import StudentCreate, StudentUpdate, StudentResponse
+from app.schemas.student import StudentCreate, StudentUpdate, StudentResponse, StudentDashboardResponse
 from app.services.student_service import StudentService
 from app.services.user_service import UserService
-from typing import List
+from typing import List, Optional
 
 
 router = APIRouter()
@@ -480,4 +480,117 @@ async def delete_student(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete student: {str(e)}"
+        )
+
+
+# DASHBOARD - Student Dashboard Data
+@router.get("/dashboard", response_model=StudentDashboardResponse, tags=["Student - Dashboard"])
+async def get_student_dashboard(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get comprehensive dashboard data for the current student"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can access their dashboard"
+        )
+
+    try:
+        dashboard_data = StudentService.get_student_dashboard_data(db, current_user["user_id"])
+        return StudentDashboardResponse(**dashboard_data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch dashboard data: {str(e)}"
+        )
+
+
+# DASHBOARD - Student Grades
+@router.get("/grades", response_model=List[dict], tags=["Student - Dashboard"])
+async def get_student_grades(
+    request: Request,
+    academic_year: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Get grades for the current student (optionally filtered by academic year)"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can access their grades"
+        )
+
+    try:
+        student = StudentService.get_student_by_user_id(db, current_user["user_id"])
+        if not student:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student profile not found"
+            )
+
+        grades = StudentService.get_student_grades(db, student.id)
+
+        # Filter by academic year if provided
+        if academic_year:
+            grades = [g for g in grades if g.get("academic_year") == academic_year]
+
+        return grades
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch grades: {str(e)}"
+        )
+
+
+# DASHBOARD - Student Attendance
+@router.get("/attendance", response_model=dict, tags=["Student - Dashboard"])
+async def get_student_attendance(
+    request: Request,
+    academic_year: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Get attendance data for the current student"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students can access their attendance"
+        )
+
+    try:
+        student = StudentService.get_student_by_user_id(db, current_user["user_id"])
+        if not student:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student profile not found"
+            )
+
+        # Use provided academic year or current year
+        if not academic_year:
+            from datetime import datetime
+            current_year = datetime.now().year
+            academic_year = f"{current_year}-{current_year + 1}"
+
+        # Get attendance data (Note: we need to update the service method to accept academic_year)
+        attendance = StudentService.get_student_attendance(db, student.id)
+
+        # Add academic year to response
+        attendance["academic_year"] = academic_year
+
+        return attendance
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch attendance: {str(e)}"
         )

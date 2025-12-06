@@ -4,7 +4,7 @@ from app.config.database import get_db
 from app.schemas.principle import PrincipleCreate, PrincipleUpdate, PrincipleResponse
 from app.services.principle_service import PrincipleService
 from app.services.user_service import UserService
-from typing import List
+from typing import List, Dict
 
 
 router = APIRouter()
@@ -376,4 +376,46 @@ async def delete_principle(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete principle: {str(e)}"
+        )
+
+
+# DASHBOARD - Get school dashboard statistics
+@router.get("/dashboard/stats", response_model=Dict, tags=["Principle - Dashboard"])
+async def get_principle_dashboard_stats(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get dashboard statistics for principle's school"""
+    current_user = get_current_user(request)
+
+    if current_user["role"] != "principle":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+
+    try:
+        # Get principle's assigned school
+        principle = PrincipleService.get_principle_by_user_id(db, current_user["user_id"])
+        if not principle:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Principle profile not found"
+            )
+
+        school_id = principle.assigned_school_id or current_user["school_id"]
+        if not school_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No school assigned to principle"
+            )
+
+        stats = PrincipleService.get_school_dashboard_stats(db, school_id)
+        return stats
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch dashboard stats: {str(e)}"
         )

@@ -8,6 +8,7 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import SubadminDashboard from './pages/Subadmin/Dashboard';
 import TeacherDashboard from './pages/Teacher/Dashboard';
 import StudentDashboard from './pages/Student/Dashboard';
+import SubjectDetails from './pages/Student/SubjectDetails';
 import PrincipleDashboard from './pages/Principle/Dashboard';
 import ParentDashboard from './pages/Parent/Dashboard';
 
@@ -90,6 +91,14 @@ function AppContent() {
         element={
           <ProtectedRoute allowedRoles={['student']}>
             <StudentDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/subject/:subjectId"
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <SubjectDetails />
           </ProtectedRoute>
         }
       />

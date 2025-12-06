@@ -44,6 +44,8 @@ class APIMiddleware(BaseHTTPMiddleware):
             "/docs",
              "/openapi.json",
             "/health",
+            "/uploads",  # Static file serving for content files
+            "/api/content/files",  # File downloads
         ]
         return any(path.startswith(skip_path) for skip_path in skip_paths)
 

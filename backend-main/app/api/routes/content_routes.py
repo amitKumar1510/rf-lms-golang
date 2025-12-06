@@ -597,3 +597,40 @@ async def get_subject_content_tree(
             detail=f"Failed to fetch content tree: {str(e)}"
         )
 
+
+@router.get("/files/{filename}", tags=["Content - Files"])
+async def get_content_file(filename: str):
+    """Serve uploaded content files"""
+    from pathlib import Path
+    from fastapi.responses import FileResponse
+
+    file_path = Path("uploads/content") / filename
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Determine media type based on file extension
+    media_type = "application/octet-stream"
+    if filename.lower().endswith('.pdf'):
+        media_type = "application/pdf"
+    elif filename.lower().endswith(('.ppt', '.pptx')):
+        media_type = "application/vnd.ms-powerpoint"
+    elif filename.lower().endswith(('.mp4', '.avi', '.mov')):
+        media_type = "video/mp4"
+    elif filename.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
+        media_type = f"image/{filename.split('.')[-1].lower()}"
+    elif filename.lower().endswith('.txt'):
+        media_type = "text/plain"
+
+    # Create response with proper headers for download
+    response = FileResponse(
+        path=file_path,
+        filename=filename,
+        media_type=media_type
+    )
+
+    # Add headers to force download
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    return response
+
