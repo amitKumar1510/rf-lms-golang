@@ -17,6 +17,7 @@ from app.api.routes import (
     module_route,
     submodule_route,
     content_route,
+    assignment_route,
 )
 from app.templates.send_credentials import MailTemplatesService
 from app.config.database import create_tables
@@ -62,6 +63,7 @@ app.include_router(parent_route.router, prefix="/api/parent", tags=["Parent"])
 app.include_router(module_route.router, prefix="/api/module", tags=["Module"])
 app.include_router(submodule_route.router, prefix="/api/submodule", tags=["Submodule"])
 app.include_router(content_route.router, prefix="/api/content", tags=["Content"])
+app.include_router(assignment_route.router, prefix="/api/assignment", tags=["Assignment"])
 
 
 

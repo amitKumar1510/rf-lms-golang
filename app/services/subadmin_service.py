@@ -6,6 +6,10 @@ from app.schemas.admin import SubadminCreate, SubadminResponse
 from fastapi import HTTPException, status
 from app.services.user_service import UserService
 from app.models.users import User,Address
+from app.models.teacher import Teacher
+from app.models.student import Student
+from app.models.users import Class, Subject, Department, AcademicSession
+from sqlalchemy import func
 
 
 class SubadminService:
@@ -167,4 +171,55 @@ class SubadminService:
         db.refresh(subadmin.address)
         return {
             "message": "Subadmin activated successfully"
+        }
+
+    @staticmethod
+    def get_overview_counts(db: Session, school_id: str):
+        if not school_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="school_id is required")
+
+        total_teachers = db.query(func.count(Teacher.id)).filter(
+            Teacher.school_id == school_id,
+            Teacher.is_deleted == False,
+        ).scalar() or 0
+
+        total_students = db.query(func.count(Student.id)).filter(
+            Student.school_id == school_id,
+            Student.is_deleted == False,
+        ).scalar() or 0
+
+        total_classes = db.query(func.count(Class.id)).filter(
+            Class.school_id == school_id,
+            Class.is_deleted == False,
+        ).scalar() or 0
+
+        total_subjects = db.query(func.count(Subject.id)).filter(
+            Subject.school_id == school_id,
+            Subject.is_deleted == False,
+        ).scalar() or 0
+
+        total_departments = db.query(func.count(Department.id)).filter(
+            Department.school_id == school_id,
+            Department.is_deleted == False,
+        ).scalar() or 0
+
+        total_sessions = db.query(func.count(AcademicSession.id)).filter(
+            AcademicSession.school_id == school_id,
+            AcademicSession.is_deleted == False,
+        ).scalar() or 0
+
+        total_subadmins = db.query(func.count(User.user_id)).filter(
+            User.school_id == school_id,
+            User.role == "subadmin",
+            User.is_deleted == False,
+        ).scalar() or 0
+
+        return {
+            "total_teachers": int(total_teachers),
+            "total_students": int(total_students),
+            "total_classes": int(total_classes),
+            "total_subjects": int(total_subjects),
+            "total_departments": int(total_departments),
+            "total_sessions": int(total_sessions),
+            "total_subadmins": int(total_subadmins),
         }

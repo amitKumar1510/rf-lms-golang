@@ -134,7 +134,8 @@ class ClassSubjectTeacherCreate(BaseModel):
     teacher_id: str
     academic_year: Optional[str] = None
     periods_per_week: Optional[int] = None
-    syllabus_completion: Optional[bool] = None
+    # percentage (0-100) stored as int in DB
+    syllabus_completion: Optional[int] = None
 
 
 class ClassSubjectTeacherResponse(BaseModel):
@@ -145,7 +146,9 @@ class ClassSubjectTeacherResponse(BaseModel):
     teacher: TeacherResponse
     academic_year: Optional[str] = None
     periods_per_week: Optional[int] = None
-    syllabus_completion: Optional[bool] = None
+    syllabus_completion: Optional[int] = None
+    is_active: bool
+    is_deleted: bool
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

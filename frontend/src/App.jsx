@@ -12,6 +12,7 @@ import TeacherLayout from "./teacher/pages/TeacherLayout";
 import TeacherDashboard from "./teacher/pages/TeacherDashboard";
 import StudentLayout from "./students/pages/StudentLayout";
 import StudentDashboard from "./students/pages/StudentDashboard";
+import SubjectContentPage from "./students/pages/SubjectContentPage";
 import ParentLayout from "./parent/pages/ParentLayout";
 import ParentDashboard from "./parent/pages/ParentDashboard";
 import PrincipleLayout from "./principle/pages/PrincipleLayout";
@@ -69,6 +70,7 @@ function App() {
 
       <Route path="/students" element={<StudentLayout />}>
         <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="subjects/:classSubjectId/content" element={<SubjectContentPage />} />
       </Route>
 
       <Route path="/parent" element={<ParentLayout />}>

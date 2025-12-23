@@ -25,7 +25,8 @@ class SubmoduleService:
         return SubmoduleResponse.model_validate(submodule)
 
     def get_all_submodules(db: Session, module_id: str):
-        submodules = db.query(Submodule).filter(Submodule.module_id == module_id, Submodule.is_deleted == False, Submodule.is_active == True).all()
+        # Return both active and inactive submodules for management UI; exclude only deleted.
+        submodules = db.query(Submodule).filter(Submodule.module_id == module_id, Submodule.is_deleted == False).all()
         return [SubmoduleResponse.model_validate(submodule) for submodule in submodules]
 
     def update_submodule(db: Session, submodule_id: str, data: SubmoduleUpdate, module_id: str):

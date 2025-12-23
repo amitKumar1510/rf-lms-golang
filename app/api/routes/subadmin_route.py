@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.services.subadmin_service import SubadminService
 from app.schemas.admin import SubadminCreate, SubadminResponse
+from app.schemas.overview import SubadminOverviewResponse
 
 
 router = APIRouter()
@@ -45,6 +46,12 @@ def deactivate_subadmin(request: Request, subadmin_id: str, db: Session = Depend
 def activate_subadmin(request: Request, subadmin_id: str, db: Session = Depends(get_db)):
     user_id=request.state.user.user_id
     return SubadminService.activate_subadmin(db, subadmin_id)
+
+
+@router.get("/overview", response_model=SubadminOverviewResponse, tags=["Subadmin"])
+def get_subadmin_overview(request: Request, db: Session = Depends(get_db)):
+    school_id = getattr(request.state.user, "school_id", None)
+    return SubadminService.get_overview_counts(db, school_id)
 
 
 

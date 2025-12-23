@@ -66,4 +66,27 @@ export async function updateClassSubject(classId, subjectId, payload) {
   return res.data;
 }
 
+// Class Subject Teacher (assign teacher to class-subject)
+export async function assignTeacherToClassSubject(classId, subjectId, teacherId, params) {
+  const res = await apiClient.post(`/api/subject/assign-teacher-to-class-subject/${classId}/${subjectId}/${teacherId}`, null, {
+    params,
+  });
+  return res.data;
+}
+
+export async function getAllClassSubjectTeachers(classId, subjectId) {
+  const res = await apiClient.get(`/api/subject/get-all-class-subject-teachers/${classId}/${subjectId}`);
+  return res.data;
+}
+
+export async function deactivateClassSubjectTeacher(classId, subjectId, teacherId) {
+  const res = await apiClient.post(`/api/subject/deactivate-class-subject-teacher/${classId}/${subjectId}/${teacherId}`);
+  return res.data;
+}
+
+export async function activateClassSubjectTeacher(classId, subjectId, teacherId) {
+  const res = await apiClient.post(`/api/subject/activate-class-subject-teacher/${classId}/${subjectId}/${teacherId}`);
+  return res.data;
+}
+
 

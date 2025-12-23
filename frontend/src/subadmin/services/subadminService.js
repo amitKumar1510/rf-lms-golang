@@ -40,4 +40,10 @@ export async function updatePassword(newPassword) {
   return res.data;
 }
 
+export async function getOverview() {
+  const res = await apiClient.get(`/api/subadmin/overview`);
+  return res.data;
+}
+
+
 

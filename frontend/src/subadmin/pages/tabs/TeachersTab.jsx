@@ -628,14 +628,14 @@ export default function TeachersTab() {
                 renderInput={(params) => <TextField {...params} label="Select subjects" placeholder="Search" />}
                 disabled={!updateSubjects}
               />
-              <Autocomplete
+              {/* <Autocomplete
                 options={selectedSubjects || []}
                 getOptionLabel={(s) => `${s?.name || ""}${s?.code ? ` (${s.code})` : ""}`}
                 value={selectedSubjects.find((s) => s.id === primarySubjectId) || null}
                 onChange={(_, v) => setPrimarySubjectId(v?.id || "")}
                 renderInput={(params) => <TextField {...params} label="Primary subject (optional)" />}
                 disabled={!updateSubjects}
-              />
+              /> */}
 
               <Divider />
               <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -657,14 +657,14 @@ export default function TeachersTab() {
                 renderInput={(params) => <TextField {...params} label="Select departments" placeholder="Search" />}
                 disabled={!updateDepartments}
               />
-              <Autocomplete
+              {/* <Autocomplete
                 options={selectedDepartments || []}
                 getOptionLabel={(d) => d?.name || ""}
                 value={selectedDepartments.find((d) => d.id === primaryDepartmentId) || null}
                 onChange={(_, v) => setPrimaryDepartmentId(v?.id || "")}
                 renderInput={(params) => <TextField {...params} label="Primary department (optional)" />}
                 disabled={!updateDepartments}
-              />
+              /> */}
 
               <Divider />
               <Typography fontWeight={900}>Address (optional)</Typography>

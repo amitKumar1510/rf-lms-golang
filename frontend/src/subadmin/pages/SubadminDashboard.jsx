@@ -103,10 +103,9 @@ export default function SubadminDashboard() {
           <Tab label="Overview" value="overview" />
           <Tab label="Subadmins" value="subadmins" />
           <Tab label="Session" value="session" />
-          <Tab label="Classes" value="classes" />
-          
-          <Tab label="Subjects" value="subjects" />
           <Tab label="Departments" value="departments" />
+          <Tab label="Classes" value="classes" />
+          <Tab label="Subjects" value="subjects" />
           <Tab label="Teachers" value="teachers" />
           <Tab label="Students" value="students" />
           <Tab label="Principles" value="principles" />

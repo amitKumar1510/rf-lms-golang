@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException, status
 from app.models.users import Subject, ClassSubject, ClassSubjectTeacher, Class
+from app.models.teacher import Teacher
+from app.models.users import User
 from app.schemas.classes import SubjectCreate, SubjectResponse, ClassSubjectCreate, ClassSubjectResponse, ClassSubjectTeacherCreate, ClassSubjectTeacherResponse
 from app.core.utils_functions import generate_id
 
@@ -213,28 +215,113 @@ class ClassSubjectService:
 
 
 class ClassSubjectTeacherService:
-    def assign_teacher_to_class_subject(
-        db: Session,
-        class_id: str,
-        subject_id: str,
-        teacher_id: str,
-        academic_year: str,
-        periods_per_week: int,
-        syllabus_completion: int,
-    ):
+    @staticmethod
+    def _get_class_subject(db: Session, class_id: str, subject_id: str, school_id: str) -> ClassSubject:
         class_subject = (
             db.query(ClassSubject)
+            .options(joinedload(ClassSubject.subject))
             .filter(
                 ClassSubject.class_id == class_id,
                 ClassSubject.subject_id == subject_id,
+                ClassSubject.school_id == school_id,
                 ClassSubject.is_deleted == False,
             )
             .first()
         )
         if not class_subject:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Class subject not found")
+        return class_subject
 
-        class_subject_teacher = ClassSubjectTeacher(
+    @staticmethod
+    def _to_response(class_subject: ClassSubject, cst: ClassSubjectTeacher) -> dict:
+        t = cst.teacher
+        u = getattr(t, "user", None)
+        subj = class_subject.subject
+        return {
+            "id": cst.id,
+            "class_id": class_subject.class_id,
+            "subject_id": class_subject.subject_id,
+            "subject": {
+                "id": subj.id,
+                "name": subj.name,
+                "code": subj.code,
+                "description": subj.description,
+                "school_id": subj.school_id,
+                "is_active": subj.is_active,
+                "created_at": subj.created_at,
+                "updated_at": subj.updated_at,
+            }
+            if subj is not None
+            else None,
+            "teacher": {
+                "id": t.id,
+                "user_id": t.user_id,
+                "name": getattr(u, "name", None),
+                "email": getattr(u, "email", None),
+                "phone": getattr(u, "phone", None),
+                "qualification": t.qualification,
+                "experience_years": t.experience_years,
+                "specialization": t.specialization,
+                "created_at": t.created_at,
+                "updated_at": t.updated_at,
+            }
+            if t is not None
+            else None,
+            "academic_year": cst.academic_year,
+            "periods_per_week": cst.periods_per_week,
+            "syllabus_completion": cst.syllabus_completion,
+            "is_active": cst.is_active,
+            "is_deleted": cst.is_deleted,
+            "created_at": cst.created_at,
+            "updated_at": cst.updated_at,
+        }
+
+    @staticmethod
+    def assign_teacher_to_class_subject(
+        db: Session,
+        class_id: str,
+        subject_id: str,
+        teacher_id: str,
+        school_id: str,
+        academic_year: str | None = None,
+        periods_per_week: int = 1,
+        syllabus_completion: int = 0,
+    ):
+        class_subject = ClassSubjectTeacherService._get_class_subject(db, class_id, subject_id, school_id)
+
+        teacher = (
+            db.query(Teacher)
+            .options(joinedload(Teacher.user))
+            .filter(
+                Teacher.id == teacher_id,
+                Teacher.school_id == school_id,
+                Teacher.is_deleted == False,
+            )
+            .first()
+        )
+        if not teacher:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found")
+
+        existing = (
+            db.query(ClassSubjectTeacher)
+            .options(joinedload(ClassSubjectTeacher.teacher).joinedload(Teacher.user))
+            .filter(
+                ClassSubjectTeacher.class_subject_id == class_subject.id,
+                ClassSubjectTeacher.teacher_id == teacher_id,
+                ClassSubjectTeacher.is_deleted == False,
+            )
+            .first()
+        )
+        if existing:
+            existing.academic_year = academic_year
+            existing.periods_per_week = periods_per_week
+            existing.syllabus_completion = syllabus_completion
+            existing.is_active = True
+            db.commit()
+            db.refresh(existing)
+            return ClassSubjectTeacherService._to_response(class_subject, existing)
+
+        cst = ClassSubjectTeacher(
             id=generate_id("class_subject_teacher"),
             class_subject_id=class_subject.id,
             teacher_id=teacher_id,
@@ -242,55 +329,68 @@ class ClassSubjectTeacherService:
             periods_per_week=periods_per_week,
             syllabus_completion=syllabus_completion,
         )
-        db.add(class_subject_teacher)
+        db.add(cst)
         db.commit()
-        return class_subject_teacher
+        cst = (
+            db.query(ClassSubjectTeacher)
+            .options(joinedload(ClassSubjectTeacher.teacher).joinedload(Teacher.user))
+            .filter(ClassSubjectTeacher.id == cst.id)
+            .first()
+        )
+        return ClassSubjectTeacherService._to_response(class_subject, cst)
 
-    def get_all_class_subject_teachers(db: Session, class_subject_id: str, school_id: str):
-        class_subject_teachers = db.query(ClassSubjectTeacher).filter(ClassSubjectTeacher.class_subject_id == class_subject_id, ClassSubjectTeacher.school_id == school_id, ClassSubjectTeacher.is_deleted == False).all()
-        class_subject_teachers_list = []
-        for class_subject_teacher in class_subject_teachers:
-            class_subject_teachers_list.append(ClassSubjectTeacherResponse.model_validate(class_subject_teacher))
-        return class_subject_teachers_list
-    def update_class_subject_teacher(db: Session, class_subject_teacher_id: str, data: ClassSubjectTeacherCreate):
-        class_subject_teacher = db.query(ClassSubjectTeacher).filter(ClassSubjectTeacher.id == class_subject_teacher_id, ClassSubjectTeacher.is_deleted == False).first()
-        if not class_subject_teacher:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Class subject teacher not found")
-        for field, value in data.model_dump().items():
-            setattr(class_subject_teacher, field, value)
-        db.commit()
-        db.refresh(class_subject_teacher)
-        return ClassSubjectTeacherResponse.model_validate(class_subject_teacher)
-    def delete_class_subject_teacher(db: Session, class_subject_teacher_id: str, school_id: str, class_subject_id: str):
-        class_subject_teacher = db.query(ClassSubjectTeacher).filter(ClassSubjectTeacher.id == class_subject_teacher_id, ClassSubjectTeacher.school_id == school_id, ClassSubjectTeacher.class_subject_id == class_subject_id, ClassSubjectTeacher.is_deleted == False).first()
-        if not class_subject_teacher:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Class subject teacher not found")
-        class_subject_teacher.is_deleted = True
-        db.commit()
-        db.refresh(class_subject_teacher)
-        return {
-            "message": "Class subject teacher deleted successfully"
-        }
-    def deactivate_class_subject_teacher(db: Session, class_subject_teacher_id: str, school_id: str, class_subject_id: str):
-        class_subject_teacher = db.query(ClassSubjectTeacher).filter(ClassSubjectTeacher.id == class_subject_teacher_id, ClassSubjectTeacher.school_id == school_id, ClassSubjectTeacher.class_subject_id == class_subject_id, ClassSubjectTeacher.is_deleted == False).first()
-        if not class_subject_teacher:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Class subject teacher not found")
-        class_subject_teacher.is_active = False
-        db.commit()
-        db.refresh(class_subject_teacher)
+    @staticmethod
+    def get_all_class_subject_teachers(db: Session, class_id: str, subject_id: str, school_id: str):
+        class_subject = ClassSubjectTeacherService._get_class_subject(db, class_id, subject_id, school_id)
+        rows = (
+            db.query(ClassSubjectTeacher)
+            .options(joinedload(ClassSubjectTeacher.teacher).joinedload(Teacher.user))
+            .filter(
+                ClassSubjectTeacher.class_subject_id == class_subject.id,
+                ClassSubjectTeacher.is_deleted == False,
+            )
+            .all()
+        )
+        return [ClassSubjectTeacherService._to_response(class_subject, r) for r in rows]
 
-        return {
-            "message": "Class subject teacher deactivated successfully"
-        }
-    def activate_class_subject_teacher(db: Session, class_subject_teacher_id: str, school_id: str, class_subject_id: str):
-        class_subject_teacher = db.query(ClassSubjectTeacher).filter(ClassSubjectTeacher.id == class_subject_teacher_id, ClassSubjectTeacher.school_id == school_id, ClassSubjectTeacher.class_subject_id == class_subject_id, ClassSubjectTeacher.is_deleted == False).first()
-        if not class_subject_teacher:
+    @staticmethod
+    def deactivate_class_subject_teacher(db: Session, class_id: str, subject_id: str, teacher_id: str, school_id: str):
+        class_subject = ClassSubjectTeacherService._get_class_subject(db, class_id, subject_id, school_id)
+        row = (
+            db.query(ClassSubjectTeacher)
+            .options(joinedload(ClassSubjectTeacher.teacher).joinedload(Teacher.user))
+            .filter(
+                ClassSubjectTeacher.class_subject_id == class_subject.id,
+                ClassSubjectTeacher.teacher_id == teacher_id,
+                ClassSubjectTeacher.is_deleted == False,
+            )
+            .first()
+        )
+        if not row:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Class subject teacher not found")
-        class_subject_teacher.is_active = True
+        row.is_active = False
         db.commit()
-        db.refresh(class_subject_teacher)
-        return {
-            "message": "Class subject teacher activated successfully"
-        }       
+        db.refresh(row)
+        return ClassSubjectTeacherService._to_response(class_subject, row)
+
+    @staticmethod
+    def activate_class_subject_teacher(db: Session, class_id: str, subject_id: str, teacher_id: str, school_id: str):
+        class_subject = ClassSubjectTeacherService._get_class_subject(db, class_id, subject_id, school_id)
+        row = (
+            db.query(ClassSubjectTeacher)
+            .options(joinedload(ClassSubjectTeacher.teacher).joinedload(Teacher.user))
+            .filter(
+                ClassSubjectTeacher.class_subject_id == class_subject.id,
+                ClassSubjectTeacher.teacher_id == teacher_id,
+                ClassSubjectTeacher.is_deleted == False,
+            )
+            .first()
+        )
+        if not row:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Class subject teacher not found")
+        row.is_active = True
+        db.commit()
+        db.refresh(row)
+        return ClassSubjectTeacherService._to_response(class_subject, row)
 
         

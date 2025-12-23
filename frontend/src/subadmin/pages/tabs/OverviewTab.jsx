@@ -1,4 +1,6 @@
-import { Box, Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, Box, Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
+import * as subadminService from "../../services/subadminService";
 
 function StatCard({ label, value }) {
   return (
@@ -14,16 +16,38 @@ function StatCard({ label, value }) {
 }
 
 export default function OverviewTab({ me }) {
-  const stats = [
-    { label: "Total Admins", value: 0 },
-    { label: "Total Teachers", value: 0 },
-    { label: "Total Students", value: 0 },
-    { label: "Total Classes", value: 0 },
-    { label: "Total Subjects", value: 0 },
-    { label: "Total Sessions", value: 0 },
-    { label: "Total Subadmins", value: 0 },
-    { label: "Total Principles", value: 0 },
-  ];
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState(null);
+  const [counts, setCounts] = useState(null);
+
+  useEffect(() => {
+    const run = async () => {
+      setLoading(true);
+      setErr(null);
+      try {
+        const data = await subadminService.getOverview();
+        setCounts(data);
+      } catch (e) {
+        setErr(e?.response?.data?.detail || e?.message || "Failed to load overview stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
+  }, []);
+
+  const stats = useMemo(
+    () => [
+      { label: "Total Teachers", value: counts?.total_teachers ?? 0 },
+      { label: "Total Students", value: counts?.total_students ?? 0 },
+      { label: "Total Classes", value: counts?.total_classes ?? 0 },
+      { label: "Total Subjects", value: counts?.total_subjects ?? 0 },
+      { label: "Total Departments", value: counts?.total_departments ?? 0 },
+      { label: "Total Sessions", value: counts?.total_sessions ?? 0 },
+      { label: "Total Subadmins", value: counts?.total_subadmins ?? 0 },
+    ],
+    [counts],
+  );
 
   return (
     <Stack spacing={2}>
@@ -34,6 +58,9 @@ export default function OverviewTab({ me }) {
           </Stack>
         </CardContent>
       </Card>
+
+      {err ? <Alert severity="error">{String(err)}</Alert> : null}
+      {loading ? <Typography sx={{ opacity: 0.7 }}>Loading stats...</Typography> : null}
 
       <Grid container spacing={2}>
         {stats.map((s) => (
@@ -68,7 +95,7 @@ function BoxText({ me }) {
         </Typography>
       </Stack>
       <Typography variant="caption" sx={{ opacity: 0.7, mt: 1, display: "block" }}>
-        Stats are placeholders for now; we’ll wire them to routes next.
+        Stats are loaded from your backend overview endpoint.
       </Typography>
     </Box>
   );

@@ -27,7 +27,8 @@ class ModuleService:
         return ModuleResponse.model_validate(module)
 
     def get_all_modules(db: Session, subject_id: str):
-        modules = db.query(Module).filter(Module.subject_id == subject_id, Module.is_deleted == False, Module.is_active == True).all()
+        # Return both active and inactive modules for management UI; exclude only deleted.
+        modules = db.query(Module).filter(Module.subject_id == subject_id, Module.is_deleted == False).all()
         return [ModuleResponse.model_validate(module) for module in modules]
 
     def update_module(db: Session, module_id: str, data: ModuleUpdate, subject_id: str):

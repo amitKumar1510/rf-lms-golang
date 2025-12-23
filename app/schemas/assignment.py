@@ -16,6 +16,15 @@ class AssignmentQuestionCreate(AssignmentQuestionBase):
     pass
 
 
+class AssignmentQuestionUpdate(BaseModel):
+    question_text: Optional[str] = None
+    question_type: Optional[str] = None
+    options: Optional[List[str]] = None
+    correct_answer: Optional[str] = None
+    marks: Optional[float] = None
+    order: Optional[int] = None
+
+
 class AssignmentQuestionResponse(AssignmentQuestionBase):
     id: str
     assignment_id: str
@@ -59,6 +68,10 @@ class AssignmentResponse(AssignmentBase):
     updated_at: Optional[datetime]
     questions: List[AssignmentQuestionResponse] = []
     submission_count: int = 0
+    question_file_url: Optional[str] = None
+    question_file_name: Optional[str] = None
+    question_file_mime: Optional[str] = None
+    question_file_size: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -123,3 +136,18 @@ class MCQSubmissionData(BaseModel):
     selected_answer: str
     is_correct: Optional[bool] = None
     marks: Optional[float] = None
+
+
+class ClassSubjectPerformanceResponse(BaseModel):
+    class_subject_id: str
+    class_id: str
+    class_name: Optional[str] = None
+    class_section: Optional[str] = None
+    subject_id: str
+    subject_name: Optional[str] = None
+    subject_code: Optional[str] = None
+
+    total_assignments: int = 0
+    total_submissions: int = 0
+    graded_submissions: int = 0
+    average_percentage: Optional[float] = None

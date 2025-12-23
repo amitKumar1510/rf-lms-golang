@@ -19,6 +19,21 @@ def get_student(request: Request, student_id: str, db: Session = Depends(get_db)
     loged_in_user = request.state.user
     return StudentCreateResponse.model_validate(StudentService.get_student(db, student_id))
 
+@router.get("/get/stu/me", response_model=StudentCreateResponse, tags=["Student"])
+def get_my_student_profile(request: Request, db: Session = Depends(get_db)):
+    user = request.state.user
+    school_id = getattr(user, "school_id", None)
+    user_id = getattr(user, "user_id", None)
+    if not school_id or not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    return StudentCreateResponse.model_validate(StudentService.get_student_by_user_id(db, school_id, user_id))
+
+# @router.get("/get/stu/me", response_model=StudentCreateResponse, tags=["Student"])
+# def get_student_me(request: Request, db: Session = Depends(get_db)):
+#     loged_in_user = request.state.user
+#     print("user_id", loged_in_user.user_id)
+#     return StudentCreateResponse.model_validate(StudentService.get_student_by_user_id(db, loged_in_user.user_id))
+
 @router.get("/get-all", response_model=list[StudentCreateResponse], tags=["Student"])
 def get_all_students(request: Request, db: Session = Depends(get_db)):
     loged_in_user = request.state.user

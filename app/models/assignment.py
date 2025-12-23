@@ -23,9 +23,15 @@ class Assignment(Base):
     is_active = Column(Boolean, default=True)
     is_deleted = Column(Boolean, default=False)
 
+    # Optional question sheet (for file_upload assignments)
+    question_file_path = Column(String, nullable=True)
+    question_file_name = Column(String, nullable=True)
+    question_file_mime = Column(String, nullable=True)
+    question_file_size = Column(Integer, nullable=True)
+
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow())
-    updated_at = Column(DateTime, onupdate=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
     subject = relationship("Subject", backref="assignments")
@@ -33,6 +39,10 @@ class Assignment(Base):
     teacher = relationship("Teacher", backref="assignments")
     questions = relationship("AssignmentQuestion", back_populates="assignment", cascade="all, delete-orphan")
     submissions = relationship("AssignmentSubmission", back_populates="assignment", cascade="all, delete-orphan")
+
+    @property
+    def question_file_url(self):
+        return self.question_file_path
 
 
 class AssignmentQuestion(Base):
@@ -48,7 +58,7 @@ class AssignmentQuestion(Base):
     order = Column(Integer, default=0)
 
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
     assignment = relationship("Assignment", back_populates="questions")
@@ -83,8 +93,8 @@ class AssignmentSubmission(Base):
     is_active = Column(Boolean, default=True)
 
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow())
-    updated_at = Column(DateTime, onupdate=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
     assignment = relationship("Assignment", back_populates="submissions")

@@ -84,9 +84,22 @@ def activate_class_subject(request: Request, class_id: str, subject_id: str, db:
 
 
 @router.post("/assign-teacher-to-class-subject/{class_id}/{subject_id}/{teacher_id}", response_model=ClassSubjectTeacherResponse, tags=["Subject"])
-def assign_teacher_to_class_subject(request: Request, class_id: str, subject_id: str, teacher_id: str, academic_year: str, periods_per_week: int, syllabus_completion: bool, db: Session = Depends(get_db)):
+def assign_teacher_to_class_subject(
+    request: Request,
+    class_id: str,
+    subject_id: str,
+    teacher_id: str,
+    academic_year: str | None = None,
+    periods_per_week: int = 1,
+    syllabus_completion: int = 0,
+    db: Session = Depends(get_db),
+):
     school_id=request.state.user.school_id
-    return ClassSubjectTeacherResponse.model_validate(ClassSubjectTeacherService.assign_teacher_to_class_subject(db, class_id, subject_id, teacher_id, academic_year, periods_per_week, syllabus_completion))
+    return ClassSubjectTeacherResponse.model_validate(
+        ClassSubjectTeacherService.assign_teacher_to_class_subject(
+            db, class_id, subject_id, teacher_id, school_id, academic_year, periods_per_week, syllabus_completion
+        )
+    )
 
 @router.get("/get-all-class-subject-teachers/{class_id}/{subject_id}", response_model=list[ClassSubjectTeacherResponse], tags=["Subject"])
 def get_all_class_subject_teachers(request: Request, class_id: str, subject_id: str, db: Session = Depends(get_db)):

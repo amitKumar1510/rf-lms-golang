@@ -31,9 +31,13 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import LibraryAddRoundedIcon from "@mui/icons-material/LibraryAddRounded";
+import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
+import ToggleOffRoundedIcon from "@mui/icons-material/ToggleOffRounded";
+import ToggleOnRoundedIcon from "@mui/icons-material/ToggleOnRounded";
 
 import * as classService from "../../services/classService";
 import * as subjectService from "../../services/subjectService";
+import * as teacherService from "../../services/teacherService";
 
 export default function ClassesTab() {
   const [items, setItems] = useState([]);
@@ -59,6 +63,16 @@ export default function ClassesTab() {
   const [openEditAssigned, setOpenEditAssigned] = useState(false);
   const [activeAssigned, setActiveAssigned] = useState(null); // ClassSubject row
   const [editAssigned, setEditAssigned] = useState({ is_compulsory: true, credits: "" });
+
+  // Manage teachers for a class-subject
+  const [openTeachers, setOpenTeachers] = useState(false);
+  const [activeClassSubject, setActiveClassSubject] = useState(null); // ClassSubject row
+  const [teacherOptions, setTeacherOptions] = useState([]);
+  const [teacherAssignments, setTeacherAssignments] = useState([]);
+  const [teacherSel, setTeacherSel] = useState(null);
+  const [assignForm, setAssignForm] = useState({ academic_year: "", periods_per_week: 1, syllabus_completion: 0 });
+  const [teachersLoading, setTeachersLoading] = useState(false);
+  const [teachersErr, setTeachersErr] = useState(null);
 
   const emptyForm = useMemo(
     () => ({
@@ -257,6 +271,81 @@ export default function ClassesTab() {
       await reloadClassSubjects();
     } catch (e) {
       setSubjectsErr(e?.response?.data?.detail || e?.message || "Failed to update assigned subject");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const openTeachersDialog = async (cs) => {
+    if (!activeClass?.id || !cs?.subject_id) return;
+    setActiveClassSubject(cs);
+    setOpenTeachers(true);
+    setTeachersErr(null);
+    setTeachersLoading(true);
+    setTeacherSel(null);
+    setAssignForm({
+      academic_year: activeClass?.academic_year || "",
+      periods_per_week: 1,
+      syllabus_completion: 0,
+    });
+    try {
+      const [teacherList, assigned] = await Promise.all([
+        // Prefer subject filter (smaller list); fallback to all.
+        teacherService.getTeachersBySubjectId(cs.subject_id).catch(() => teacherService.getAllTeachers()),
+        subjectService.getAllClassSubjectTeachers(activeClass.id, cs.subject_id),
+      ]);
+      setTeacherOptions(teacherList || []);
+      setTeacherAssignments(assigned || []);
+    } catch (e) {
+      setTeachersErr(e?.response?.data?.detail || e?.message || "Failed to load teacher assignments");
+    } finally {
+      setTeachersLoading(false);
+    }
+  };
+
+  const refreshTeacherAssignments = async () => {
+    if (!activeClass?.id || !activeClassSubject?.subject_id) return;
+    setTeachersLoading(true);
+    setTeachersErr(null);
+    try {
+      const assigned = await subjectService.getAllClassSubjectTeachers(activeClass.id, activeClassSubject.subject_id);
+      setTeacherAssignments(assigned || []);
+    } catch (e) {
+      setTeachersErr(e?.response?.data?.detail || e?.message || "Failed to load teacher assignments");
+    } finally {
+      setTeachersLoading(false);
+    }
+  };
+
+  const assignTeacher = async () => {
+    if (!activeClass?.id || !activeClassSubject?.subject_id || !teacherSel?.id) return;
+    setTeachersErr(null);
+    setBusyId(`assignTeacher:${activeClass.id}:${activeClassSubject.subject_id}:${teacherSel.id}`);
+    try {
+      await subjectService.assignTeacherToClassSubject(activeClass.id, activeClassSubject.subject_id, teacherSel.id, {
+        academic_year: assignForm.academic_year || undefined,
+        periods_per_week: Number(assignForm.periods_per_week) || 1,
+        syllabus_completion: Number(assignForm.syllabus_completion) || 0,
+      });
+      setTeacherSel(null);
+      await refreshTeacherAssignments();
+    } catch (e) {
+      setTeachersErr(e?.response?.data?.detail || e?.message || "Failed to assign teacher");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const toggleTeacherAssignment = async (row) => {
+    if (!activeClass?.id || !activeClassSubject?.subject_id || !row?.teacher?.id) return;
+    setTeachersErr(null);
+    setBusyId(`toggleTeacher:${row.teacher.id}`);
+    try {
+      if (row.is_active) await subjectService.deactivateClassSubjectTeacher(activeClass.id, activeClassSubject.subject_id, row.teacher.id);
+      else await subjectService.activateClassSubjectTeacher(activeClass.id, activeClassSubject.subject_id, row.teacher.id);
+      await refreshTeacherAssignments();
+    } catch (e) {
+      setTeachersErr(e?.response?.data?.detail || e?.message || "Failed to update assignment");
     } finally {
       setBusyId(null);
     }
@@ -593,6 +682,13 @@ export default function ClassesTab() {
                         </TableCell>
                         <TableCell>{cs.credits ?? "-"}</TableCell>
                         <TableCell align="right">
+                          <Tooltip title="Assign / Manage teachers">
+                            <span>
+                              <IconButton size="small" onClick={() => openTeachersDialog(cs)}>
+                                <PersonAddRoundedIcon fontSize="small" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
                           <Tooltip title="Edit">
                             <span>
                               <IconButton
@@ -707,6 +803,132 @@ export default function ClassesTab() {
             >
               {busyId === `edit:${activeClass?.id}:${activeAssigned?.subject_id}` ? "Saving..." : "Save"}
             </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Manage teachers dialog */}
+        <Dialog
+          open={openTeachers}
+          onClose={() => {
+            setOpenTeachers(false);
+            setActiveClassSubject(null);
+            setTeacherAssignments([]);
+            setTeacherOptions([]);
+            setTeacherSel(null);
+            setTeachersErr(null);
+          }}
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle>
+            Manage Teachers —{" "}
+            <Typography component="span" fontWeight={900}>
+              {activeClass?.name || "-"} / {activeClassSubject?.subject?.name || "-"}
+            </Typography>
+          </DialogTitle>
+          <DialogContent sx={{ pt: 1 }}>
+            {teachersErr ? (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {String(teachersErr)}
+              </Alert>
+            ) : null}
+            {teachersLoading ? <Typography sx={{ opacity: 0.7, mb: 1 }}>Loading...</Typography> : null}
+
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "stretch", md: "center" }}>
+                <Autocomplete
+                  options={teacherOptions || []}
+                  getOptionLabel={(t) => `${t?.name || ""}${t?.email ? ` (${t.email})` : ""}`}
+                  value={teacherSel}
+                  onChange={(_, v) => setTeacherSel(v)}
+                  renderInput={(params) => <TextField {...params} label="Select teacher" />}
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="Academic year"
+                  value={assignForm.academic_year}
+                  onChange={(e) => setAssignForm((s) => ({ ...s, academic_year: e.target.value }))}
+                  sx={{ width: { xs: "100%", md: 180 } }}
+                />
+                <TextField
+                  label="Periods/week"
+                  type="number"
+                  value={assignForm.periods_per_week}
+                  onChange={(e) => setAssignForm((s) => ({ ...s, periods_per_week: e.target.value }))}
+                  sx={{ width: { xs: "100%", md: 140 } }}
+                  inputProps={{ min: 0 }}
+                />
+                <TextField
+                  label="Syllabus %"
+                  type="number"
+                  value={assignForm.syllabus_completion}
+                  onChange={(e) => setAssignForm((s) => ({ ...s, syllabus_completion: e.target.value }))}
+                  sx={{ width: { xs: "100%", md: 140 } }}
+                  inputProps={{ min: 0, max: 100 }}
+                />
+              </Stack>
+
+              <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ flexWrap: "wrap" }}>
+                <Button onClick={refreshTeacherAssignments} variant="outlined" startIcon={<RefreshRoundedIcon />}>
+                  Refresh
+                </Button>
+                <Button
+                  onClick={assignTeacher}
+                  variant="contained"
+                  startIcon={<AddRoundedIcon />}
+                  disabled={!teacherSel?.id || busyId?.startsWith("assignTeacher:")}
+                >
+                  Assign Teacher
+                </Button>
+              </Stack>
+
+              <Divider />
+              <Typography fontWeight={900}>Assigned Teachers</Typography>
+              {teacherAssignments?.length ? (
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Teacher</TableCell>
+                      <TableCell>Academic year</TableCell>
+                      <TableCell>Periods/week</TableCell>
+                      <TableCell>Syllabus %</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell align="right">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {teacherAssignments.map((ta) => (
+                      <TableRow key={ta.id} hover>
+                        <TableCell>
+                          <Typography fontWeight={800}>{ta?.teacher?.name || "-"}</Typography>
+                          <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                            {ta?.teacher?.email || ""}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>{ta.academic_year || "-"}</TableCell>
+                        <TableCell>{ta.periods_per_week ?? "-"}</TableCell>
+                        <TableCell>{ta.syllabus_completion ?? 0}</TableCell>
+                        <TableCell>{ta.is_active ? <Chip size="small" color="success" label="Active" /> : <Chip size="small" label="Inactive" />}</TableCell>
+                        <TableCell align="right">
+                          <Tooltip title={ta.is_active ? "Deactivate" : "Activate"}>
+                            <span>
+                              <IconButton size="small" onClick={() => toggleTeacherAssignment(ta)} disabled={busyId === `toggleTeacher:${ta?.teacher?.id}`}>
+                                {ta.is_active ? <ToggleOffRoundedIcon fontSize="small" /> : <ToggleOnRoundedIcon fontSize="small" />}
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <Typography sx={{ opacity: 0.7 }}>No teachers assigned yet.</Typography>
+              )}
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenTeachers(false)}>Close</Button>
           </DialogActions>
         </Dialog>
       </CardContent>
