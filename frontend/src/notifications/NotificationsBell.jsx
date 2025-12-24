@@ -194,7 +194,7 @@ export default function NotificationsBell({ role }) {
               </Button>
               {canSend ? (
                 <Button size="small" variant="contained" startIcon={<SendRoundedIcon />} onClick={() => setSendOpen(true)}>
-                  Send
+                  Add Notification
                 </Button>
               ) : null}
             </Stack>
