@@ -23,6 +23,8 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import AccountTreeRoundedIcon from "@mui/icons-material/AccountTreeRounded";
+import ThemeSettingsButton from "../../theme/ThemeSettingsButton";
+import NotificationsBell from "../../notifications/NotificationsBell";
 
 import SchoolsTable from "./components/SchoolsTable";
 import SubadminsTable from "./components/SubadminsTable";
@@ -179,6 +181,8 @@ export default function AdminDashboard() {
             <Button onClick={refresh} variant="outlined" startIcon={<RefreshRoundedIcon />}>
               Refresh
             </Button>
+            <NotificationsBell role={user?.role} />
+            <ThemeSettingsButton />
             <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />}>
               Logout
             </Button>

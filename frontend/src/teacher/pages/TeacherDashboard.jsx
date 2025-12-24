@@ -18,12 +18,15 @@ import {
 } from "@mui/material";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import ThemeSettingsButton from "../../theme/ThemeSettingsButton";
+import NotificationsBell from "../../notifications/NotificationsBell";
 
 import * as teacherApi from "../services/teacherService";
 import AssignedClassesTab from "./tabs/AssignedClassesTab";
 import StudentsTab from "./tabs/StudentsTab";
 import AssignmentsTab from "./tabs/AssignmentsTab";
 import ContentTab from "./tabs/ContentTab";
+import ChatTab from "./tabs/ChatTab";
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
@@ -96,6 +99,8 @@ export default function TeacherDashboard() {
                 </Typography>
               </Box>
             </Stack>
+            <NotificationsBell role={user?.role} />
+            <ThemeSettingsButton />
             <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />}>
               Logout
             </Button>
@@ -107,6 +112,7 @@ export default function TeacherDashboard() {
           <Tab label="Students" value="students" />
           <Tab label="Assignments" value="assignments" />
           <Tab label="Content" value="content" />
+          <Tab label="Chat" value="chat" />
         </Tabs>
       </AppBar>
 
@@ -115,6 +121,7 @@ export default function TeacherDashboard() {
         {tab === "students" ? <StudentsTab teacher={teacher} /> : null}
         {tab === "assignments" ? <AssignmentsTab teacher={teacher} /> : null}
         {tab === "content" ? <ContentTab teacher={teacher} /> : null}
+        {tab === "chat" ? <ChatTab teacher={teacher} /> : null}
         {tab !== "assigned" && loading ? <Typography sx={{ opacity: 0.7, mt: 2 }}>Loading teacher profile...</Typography> : null}
       </Container>
     </Box>

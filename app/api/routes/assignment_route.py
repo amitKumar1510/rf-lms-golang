@@ -102,6 +102,23 @@ def get_my_submissions(request: Request, class_subject_id: str | None = None, db
     return out
 
 
+@router.get("/parent/submissions", response_model=list[AssignmentSubmissionResponse], tags=["Assignment"])
+def get_parent_submissions(request: Request, class_subject_id: str | None = None, db: Session = Depends(get_db)):
+    user = request.state.user
+    if getattr(user, "role", None) != "parent":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Parent access required")
+    school_id = getattr(user, "school_id", None)
+    student_id = getattr(user, "student_id", None)
+    if not school_id or not student_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Parent is not linked to a student")
+    subs = AssignmentService.get_submissions_for_student_id(db, school_id, student_id, class_subject_id=class_subject_id)
+    out = []
+    for s in subs:
+        s.file_path = _to_public_url(request, getattr(s, "file_path", None))
+        out.append(AssignmentSubmissionResponse.model_validate(s))
+    return out
+
+
 @router.get("/principle/performance", response_model=list[ClassSubjectPerformanceResponse], tags=["Assignment"])
 def get_school_performance(
     request: Request,

@@ -46,6 +46,12 @@ def create_tables():
     # Import assignment models
     from app.models.assignment import Assignment, AssignmentQuestion, AssignmentSubmission
 
+    # Import chat models
+    from app.models.chat import ChatConversation, ChatMessage
+
+    # Import notification models
+    from app.models.notification import Notification, NotificationRecipient
+
     # Import role-specific models
     from app.models.teacher import Teacher, TeacherSubject, TeacherDepartment
     # from app.models.student import Student, StudentSubject

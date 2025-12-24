@@ -15,6 +15,7 @@ import StudentDashboard from "./students/pages/StudentDashboard";
 import SubjectContentPage from "./students/pages/SubjectContentPage";
 import ParentLayout from "./parent/pages/ParentLayout";
 import ParentDashboard from "./parent/pages/ParentDashboard";
+import ParentLogin from "./parent/pages/ParentLogin";
 import PrincipleLayout from "./principle/pages/PrincipleLayout";
 import PrincipleDashboard from "./principle/pages/PrincipleDashboard";
 
@@ -74,6 +75,7 @@ function App() {
       </Route>
 
       <Route path="/parent" element={<ParentLayout />}>
+        <Route path="login" element={<ParentLogin />} />
         <Route path="dashboard" element={<ParentDashboard />} />
       </Route>
 

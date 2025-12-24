@@ -1,44 +1,46 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 from datetime import datetime
 
 
-class ParentCreate(BaseModel):
-    occupation: Optional[str] = None
-    education_level: Optional[str] = None
-    marital_status: Optional[str] = None
-    emergency_contact_name: Optional[str] = None
-    emergency_contact_phone: Optional[str] = None
-    emergency_contact_relation: Optional[str] = None
-    number_of_children: Optional[int] = None
+class AddressBase(BaseModel):
+    street: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    postal_code: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
-class ParentUpdate(BaseModel):
-    occupation: Optional[str] = None
-    education_level: Optional[str] = None
-    marital_status: Optional[str] = None
-    emergency_contact_name: Optional[str] = None
-    emergency_contact_phone: Optional[str] = None
-    emergency_contact_relation: Optional[str] = None
-    number_of_children: Optional[int] = None
-
-
-class ParentResponse(BaseModel):
+class ParentMeResponse(BaseModel):
     id: str
-    user_id: str
+    student_id: str
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    relation: Optional[str] = None
+    role: str
+    school_id: Optional[str] = None
+
     occupation: Optional[str] = None
     education_level: Optional[str] = None
     marital_status: Optional[str] = None
-    emergency_contact_name: Optional[str] = None
-    emergency_contact_phone: Optional[str] = None
-    emergency_contact_relation: Optional[str] = None
-    number_of_children: Optional[int] = None
-    children: List[dict] = []  # Associated student information
+    address: Optional[AddressBase] = None
+
+    is_active: bool
+    is_deleted: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
+
+
+class ParentLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class ParentLoginResponse(BaseModel):
@@ -52,9 +54,10 @@ class ChangePasswordRequest(BaseModel):
 
 
 class ForgetPassword(BaseModel):
-    email: str
+    email: EmailStr
+
 
 class ResetPasswordRequest(BaseModel):
-    email: str
+    email: EmailStr
     otp_code: str
     new_password: str

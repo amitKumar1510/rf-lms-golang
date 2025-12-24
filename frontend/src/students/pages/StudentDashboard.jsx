@@ -5,6 +5,8 @@ import { logoutThunk } from "../../store/authSlice";
 import { AppBar, Avatar, Box, Button, Chip, Container, Stack, Tab, Tabs, Toolbar, Typography } from "@mui/material";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import ThemeSettingsButton from "../../theme/ThemeSettingsButton";
+import NotificationsBell from "../../notifications/NotificationsBell";
 
 import * as studentService from "../services/studentService";
 import * as subjectService from "../services/subjectService";
@@ -107,6 +109,8 @@ export default function StudentDashboard() {
                 </Typography>
               </Box>
             </Stack>
+            <NotificationsBell role={user?.role} />
+            <ThemeSettingsButton />
             <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />}>
               Logout
             </Button>

@@ -329,6 +329,54 @@ class AssignmentService:
                 s.assignment_title = None
         return subs
 
+    @staticmethod
+    def get_submissions_for_student_id(db: Session, school_id: str, student_id: str, class_subject_id: str | None = None):
+        """
+        Used for parent view: fetch submissions/marks for a specific student_id (scoped to school).
+        """
+        # Ensure student belongs to school
+        student = (
+            db.query(Student)
+            .options(joinedload(Student.user))
+            .filter(
+                Student.id == student_id,
+                Student.school_id == school_id,
+                Student.is_deleted == False,
+            )
+            .first()
+        )
+        if not student:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+
+        q = (
+            AssignmentService._submission_query(db)
+            .join(Assignment, AssignmentSubmission.assignment_id == Assignment.id)
+            .join(ClassSubject, Assignment.class_subject_id == ClassSubject.id)
+            .filter(
+                AssignmentSubmission.student_id == student.id,
+                AssignmentSubmission.is_active == True,
+                Assignment.is_deleted == False,
+                ClassSubject.school_id == school_id,
+                ClassSubject.is_deleted == False,
+            )
+            .order_by(AssignmentSubmission.submitted_at.desc().nullslast(), AssignmentSubmission.created_at.desc())
+        )
+        if class_subject_id:
+            q = q.filter(Assignment.class_subject_id == class_subject_id)
+
+        subs = q.all()
+        for s in subs:
+            s.file_path = AssignmentService._public_upload_url(s.file_path)
+            try:
+                s.student_name = s.student.user.name if s.student and s.student.user else None
+            except Exception:
+                s.student_name = None
+            try:
+                s.assignment_title = s.assignment.title if s.assignment else None
+            except Exception:
+                s.assignment_title = None
+        return subs
+
     # ---------------------- performance (principle) ----------------------
     @staticmethod
     def get_class_subject_performance(

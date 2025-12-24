@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, Response, Request
-from app.schemas.parent import ParentCreate, ParentResponse
+from app.schemas.student import ParentCreate
 from app.core.utils_functions import generate_id, generate_otp
 from app.models.users import User, Address, OtpModel
 from app.models.student import StudentsParent

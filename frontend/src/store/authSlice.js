@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as authService from "../admin/services/authService";
+import * as parentAuthService from "../parent/services/parentAuthService";
 
 const initialState = {
   status: "idle", // idle | loading | succeeded | failed
@@ -22,20 +23,46 @@ export const loginThunk = createAsyncThunk("auth/login", async ({ email, passwor
   }
 });
 
+export const parentLoginThunk = createAsyncThunk("auth/parentLogin", async ({ email, password }, { rejectWithValue }) => {
+  try {
+    const data = await parentAuthService.login({ email, password });
+    const me = await parentAuthService.me();
+    return { ...data, me };
+  } catch (err) {
+    const msg = err?.response?.data?.detail || err?.message || "Parent login failed";
+    return rejectWithValue(msg);
+  }
+});
+
 export const hydrateThunk = createAsyncThunk("auth/hydrate", async (_, { rejectWithValue }) => {
   try {
     const me = await authService.me();
     return me;
   } catch (err) {
-    // Not logged-in is a normal case; keep it as rejected with no noisy error
-    const msg = err?.response?.data?.detail || err?.message || "Not authenticated";
-    return rejectWithValue(msg);
+    // fallback: parent session
+    try {
+      const parentMe = await parentAuthService.me();
+      return parentMe;
+    } catch (err2) {
+      const msg = err2?.response?.data?.detail || err?.response?.data?.detail || err2?.message || err?.message || "Not authenticated";
+      return rejectWithValue(msg);
+    }
   }
 });
 
 export const logoutThunk = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
   try {
-    await authService.logout();
+    // try both; one will succeed depending on role/session type
+    try {
+      await authService.logout();
+    } catch {
+      // ignore
+    }
+    try {
+      await parentAuthService.logout();
+    } catch {
+      // ignore
+    }
     return true;
   } catch (err) {
     const msg = err?.response?.data?.detail || err?.message || "Logout failed";
@@ -47,6 +74,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    clearError(state) {
+      state.error = null;
+      state.status = "idle";
+    },
     logout(state) {
       state.accessToken = null;
       state.status = "idle";
@@ -71,6 +102,23 @@ const authSlice = createSlice({
       .addCase(loginThunk.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Login failed";
+      });
+
+    builder
+      .addCase(parentLoginThunk.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(parentLoginThunk.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.error = null;
+        state.accessToken = action.payload?.access_token || null;
+        if (state.accessToken) localStorage.setItem("access_token", state.accessToken);
+        state.user = action.payload?.me || null;
+      })
+      .addCase(parentLoginThunk.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Parent login failed";
       });
 
     builder
@@ -108,7 +156,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;
 
 

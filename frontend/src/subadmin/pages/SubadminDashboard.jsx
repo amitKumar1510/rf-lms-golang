@@ -19,6 +19,8 @@ import {
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import ThemeSettingsButton from "../../theme/ThemeSettingsButton";
+import NotificationsBell from "../../notifications/NotificationsBell";
 
 import OverviewTab from "./tabs/OverviewTab";
 import SubadminsTab from "./tabs/SubadminsTab";
@@ -88,6 +90,8 @@ export default function SubadminDashboard() {
             <IconButton color="inherit" onClick={() => setTab("settings")} title="Settings">
               <SettingsRoundedIcon />
             </IconButton>
+            <NotificationsBell role={me?.role} />
+            <ThemeSettingsButton />
             <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />}>
               Logout
             </Button>
