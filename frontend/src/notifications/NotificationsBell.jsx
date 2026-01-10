@@ -61,65 +61,9 @@ export default function NotificationsBell({ role }) {
   };
 
   useEffect(() => {
-    // One-time fetch as fallback (WS will keep it updated)
     refreshUnread();
-  }, []);
-
-  useEffect(() => {
-    const httpBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-    const wsBase = httpBase.replace(/^http/, "ws");
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-
-    let reconnect = null;
-    let ws = null;
-    let backoff = 1000;
-
-    const connect = () => {
-      try {
-        if (reconnect) clearTimeout(reconnect);
-        ws = new WebSocket(`${wsBase}/ws/notifications?token=${encodeURIComponent(token)}`);
-        ws.onopen = () => {
-          backoff = 1000;
-        };
-        ws.onmessage = (ev) => {
-          try {
-            const data = JSON.parse(ev.data);
-            if (data?.type === "notification.unread_count") {
-              setUnread(Number(data?.count || 0));
-            }
-            if (data?.type === "notification.new") {
-              setUnread((x) => Number(x || 0) + 1);
-            }
-          } catch {
-            // ignore
-          }
-        };
-        ws.onclose = () => {
-          const next = Math.min(backoff * 2, 30000);
-          reconnect = setTimeout(connect, backoff);
-          backoff = next;
-        };
-      } catch {
-        const next = Math.min(backoff * 2, 30000);
-        reconnect = setTimeout(connect, backoff);
-        backoff = next;
-      }
-    };
-
-    connect();
-    return () => {
-      try {
-        if (reconnect) clearTimeout(reconnect);
-      } catch {
-        // ignore
-      }
-      try {
-        ws?.close();
-      } catch {
-        // ignore
-      }
-    };
+    const t = setInterval(refreshUnread, 7000);
+    return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
@@ -194,7 +138,7 @@ export default function NotificationsBell({ role }) {
               </Button>
               {canSend ? (
                 <Button size="small" variant="contained" startIcon={<SendRoundedIcon />} onClick={() => setSendOpen(true)}>
-                  Add Notification
+                  Send
                 </Button>
               ) : null}
             </Stack>

@@ -13,6 +13,7 @@ import * as subjectService from "../services/subjectService";
 import ProfileTab from "./tabs/ProfileTab";
 import SubjectsContentTab from "./tabs/SubjectsContentTab";
 import AssignmentsTab from "./tabs/AssignmentsTab";
+import AttendanceTab from "./tabs/AttendanceTab";
 import MarksTab from "./tabs/MarksTab";
 
 export default function StudentDashboard() {
@@ -121,6 +122,7 @@ export default function StudentDashboard() {
           <Tab label="My Details" value="profile" />
           <Tab label="Subjects & Content" value="content" />
           <Tab label="Assignments / Quizzes" value="assignments" />
+          <Tab label="Attendance" value="attendance" />
           <Tab label="Marks" value="marks" />
         </Tabs>
       </AppBar>
@@ -132,6 +134,7 @@ export default function StudentDashboard() {
         {tab === "profile" ? <ProfileTab profile={profile} /> : null}
         {tab === "content" ? <SubjectsContentTab classSubjects={classSubjects} /> : null}
         {tab === "assignments" ? <AssignmentsTab classSubjects={classSubjects} /> : null}
+        {tab === "attendance" ? <AttendanceTab student={profile?.student} classSubjects={classSubjects} /> : null}
         {tab === "marks" ? <MarksTab /> : null}
       </Container>
     </Box>

@@ -34,6 +34,7 @@ import * as moduleService from "../services/moduleService";
 import * as submoduleService from "../services/submoduleService";
 import * as contentService from "../services/contentService";
 import * as assignmentService from "../services/assignmentService";
+import AttendanceTab from "./tabs/AttendanceTab";
 import ChatTab from "./tabs/ChatTab";
 
 export default function ParentDashboard() {
@@ -225,6 +226,7 @@ export default function ParentDashboard() {
           <Tab label="My Details" value="profile" />
           <Tab label="Child Details" value="child" />
           <Tab label="Child Subjects & Content" value="content" />
+          <Tab label="Child Attendance" value="attendance" />
           <Tab label="Performance" value="performance" />
           <Tab label="Chat" value="chat" />
         </Tabs>
@@ -462,6 +464,10 @@ export default function ParentDashboard() {
               </CardContent>
             </Card>
           </Stack>
+        ) : null}
+
+        {tab === "attendance" ? (
+          <AttendanceTab child={childStudent} classSubjects={classSubjects} />
         ) : null}
 
         {tab === "performance" ? (

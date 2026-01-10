@@ -26,6 +26,7 @@ import AssignedClassesTab from "./tabs/AssignedClassesTab";
 import StudentsTab from "./tabs/StudentsTab";
 import AssignmentsTab from "./tabs/AssignmentsTab";
 import ContentTab from "./tabs/ContentTab";
+import AttendanceTab from "./tabs/AttendanceTab";
 import ChatTab from "./tabs/ChatTab";
 
 export default function TeacherDashboard() {
@@ -111,6 +112,7 @@ export default function TeacherDashboard() {
           <Tab label="Assigned Classes" value="assigned" />
           <Tab label="Students" value="students" />
           <Tab label="Assignments" value="assignments" />
+          <Tab label="Attendance" value="attendance" />
           <Tab label="Content" value="content" />
           <Tab label="Chat" value="chat" />
         </Tabs>
@@ -120,6 +122,7 @@ export default function TeacherDashboard() {
         {tab === "assigned" ? <AssignedClassesTab teacher={teacher} loading={loading} error={err} /> : null}
         {tab === "students" ? <StudentsTab teacher={teacher} /> : null}
         {tab === "assignments" ? <AssignmentsTab teacher={teacher} /> : null}
+        {tab === "attendance" ? <AttendanceTab teacher={teacher} /> : null}
         {tab === "content" ? <ContentTab teacher={teacher} /> : null}
         {tab === "chat" ? <ChatTab teacher={teacher} /> : null}
         {tab !== "assigned" && loading ? <Typography sx={{ opacity: 0.7, mt: 2 }}>Loading teacher profile...</Typography> : null}

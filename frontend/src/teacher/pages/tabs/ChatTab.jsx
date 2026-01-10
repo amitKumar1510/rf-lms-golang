@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Autocomplete,
@@ -39,10 +39,6 @@ export default function ChatTab({ teacher }) {
   const [editText, setEditText] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
-  const wsRef = useRef(null);
-  const reconnectRef = useRef(null);
-  const selectedConvIdRef = useRef(null);
-  const backoffRef = useRef(1000);
 
   // new chat dialog
   const [openNew, setOpenNew] = useState(false);
@@ -114,86 +110,9 @@ export default function ChatTab({ teacher }) {
   useEffect(() => {
     if (!selectedConv?.id) return;
     loadMessages(selectedConv.id);
+    const t = setInterval(() => loadMessages(selectedConv.id), 4000);
+    return () => clearInterval(t);
   }, [selectedConv?.id]);
-
-  useEffect(() => {
-    selectedConvIdRef.current = selectedConv?.id || null;
-  }, [selectedConv?.id]);
-
-  useEffect(() => {
-    const httpBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-    const wsBase = httpBase.replace(/^http/, "ws");
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-
-    const connect = () => {
-      try {
-        if (reconnectRef.current) clearTimeout(reconnectRef.current);
-        const ws = new WebSocket(`${wsBase}/ws/chat?token=${encodeURIComponent(token)}`);
-        wsRef.current = ws;
-        ws.onopen = () => {
-          backoffRef.current = 1000;
-        };
-        ws.onmessage = (ev) => {
-          try {
-            const data = JSON.parse(ev.data);
-            if (data?.type === "chat.message" && data?.message) {
-              const msg = data.message;
-              const convId = data.conversation_id || msg.conversation_id;
-              setMessages((prev) => {
-                const sel = selectedConvIdRef.current;
-                if (!sel || sel !== convId) return prev;
-                if (prev?.some((x) => x?.id === msg.id)) return prev;
-                return [...(prev || []), msg];
-              });
-              setConversations((prev) => {
-                const items = [...(prev || [])];
-                const idx = items.findIndex((c) => c?.id === convId);
-                if (idx === -1) return items;
-                const updated = { ...items[idx], last_message_at: msg.created_at };
-                items.splice(idx, 1);
-                return [updated, ...items];
-              });
-            }
-            if (data?.type === "chat.message_edited" && data?.message) {
-              const msg = data.message;
-              const convId = data.conversation_id || msg.conversation_id;
-              setMessages((prev) => {
-                const sel = selectedConvIdRef.current;
-                if (!sel || sel !== convId) return prev;
-                return (prev || []).map((x) => (x?.id === msg.id ? { ...x, text: msg.text } : x));
-              });
-            }
-          } catch {
-            // ignore
-          }
-        };
-        ws.onclose = () => {
-          const next = Math.min(backoffRef.current * 2, 30000);
-          reconnectRef.current = setTimeout(connect, backoffRef.current);
-          backoffRef.current = next;
-        };
-      } catch {
-        const next = Math.min(backoffRef.current * 2, 30000);
-        reconnectRef.current = setTimeout(connect, backoffRef.current);
-        backoffRef.current = next;
-      }
-    };
-
-    connect();
-    return () => {
-      try {
-        if (reconnectRef.current) clearTimeout(reconnectRef.current);
-      } catch {
-        // ignore
-      }
-      try {
-        wsRef.current?.close();
-      } catch {
-        // ignore
-      }
-    };
-  }, []);
 
   const send = async () => {
     const m = text.trim();
@@ -201,6 +120,8 @@ export default function ChatTab({ teacher }) {
     setText("");
     try {
       await chatService.sendMessage(selectedConv.id, m);
+      await loadMessages(selectedConv.id);
+      await loadConversations();
     } catch (e) {
       setErr(e?.response?.data?.detail || e?.message || "Failed to send message");
     }
@@ -297,22 +218,8 @@ export default function ChatTab({ teacher }) {
                 {conversations.map((c) => (
                   <ListItemButton key={c.id} selected={selectedConv?.id === c.id} onClick={() => setSelectedConv(c)} sx={{ borderRadius: 1 }}>
                     <ListItemText
-                      primary={
-                        <Typography fontWeight={800}>
-                          {c.parent?.name || c.parent?.email || "Parent"}
-                        </Typography>
-                      }
-                      secondary={
-                        <Stack spacing={0.25} sx={{ mt: 0.25 }}>
-                          <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                            {c.parent?.student_name || c.parent?.student_id ? `${c.parent?.student_name || c.parent?.student_id}` : ""}
-                            {c.parent?.class_name ? ` • ${c.parent.class_name}${c.parent?.class_section ? ` (${c.parent.class_section})` : ""}` : ""}
-                          </Typography>
-                          <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                            {c.parent?.email || ""}
-                          </Typography>
-                        </Stack>
-                      }
+                      primary={<Typography fontWeight={800}>{c.parent?.name || c.parent?.email || "Parent"}</Typography>}
+                      secondary={<Typography variant="caption">{c.parent?.email || ""}</Typography>}
                     />
                     {c.last_message_at ? <Chip size="small" label={new Date(c.last_message_at).toLocaleDateString()} variant="outlined" /> : null}
                   </ListItemButton>

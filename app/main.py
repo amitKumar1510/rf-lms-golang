@@ -18,6 +18,7 @@ from app.api.routes import (
     submodule_route,
     content_route,
     assignment_route,
+    attendance_route,
     chat_route,
     notification_route,
     ws_route,
@@ -67,6 +68,7 @@ app.include_router(module_route.router, prefix="/api/module", tags=["Module"])
 app.include_router(submodule_route.router, prefix="/api/submodule", tags=["Submodule"])
 app.include_router(content_route.router, prefix="/api/content", tags=["Content"])
 app.include_router(assignment_route.router, prefix="/api/assignment", tags=["Assignment"])
+app.include_router(attendance_route.router, prefix="/api/attendance", tags=["Attendance"])
 app.include_router(chat_route.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(notification_route.router, prefix="/api/notification", tags=["Notification"])
 app.include_router(ws_route.router)
