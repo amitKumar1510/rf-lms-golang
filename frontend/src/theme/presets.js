@@ -1,202 +1,147 @@
 import { createTheme } from "@mui/material/styles";
+import { buildSaasComponents, buildTypography } from "./themeShared";
 
-const baseComponents = {
-  // readable popups/dropdowns/dialogs (opaque)
-  MuiPopover: {
-    styleOverrides: {
-      paper: {
-        backgroundImage: "none",
-        backgroundColor: "#0f172a",
-        border: "1px solid rgba(255,255,255,0.14)",
-        boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
+function createPresetTheme({
+  mode,
+  primary,
+  backgroundDefault,
+  surfaceBackground,
+  surfaceBorder,
+  surfaceShadow,
+  paperShadow,
+  appBarBackground,
+  backdropBackground,
+  tooltipBackground,
+  tooltipArrow,
+  textPrimary,
+  textSecondary,
+}) {
+  return createTheme({
+    palette: {
+      mode,
+      primary: { main: primary },
+      background: {
+        default: backgroundDefault,
+        paper: surfaceBackground,
+      },
+      text: {
+        primary: textPrimary,
+        secondary: textSecondary,
       },
     },
-  },
-  MuiMenu: {
-    styleOverrides: {
-      paper: {
-        backgroundImage: "none",
-        backgroundColor: "#0f172a",
-        border: "1px solid rgba(255,255,255,0.14)",
-        boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
-      },
-    },
-  },
-  MuiAutocomplete: {
-    styleOverrides: {
-      paper: {
-        backgroundImage: "none",
-        backgroundColor: "#0f172a",
-        border: "1px solid rgba(255,255,255,0.14)",
-        boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
-      },
-    },
-  },
-  MuiDialog: {
-    styleOverrides: {
-      paper: {
-        backgroundImage: "none",
-        backgroundColor: "#0f172a",
-        border: "1px solid rgba(255,255,255,0.14)",
-      },
-    },
-  },
-  MuiBackdrop: {
-    styleOverrides: {
-      root: {
-        backgroundColor: "rgba(0,0,0,0.72)",
-      },
-    },
-  },
-  MuiTooltip: {
-    styleOverrides: {
-      tooltip: {
-        backgroundColor: "#0f172a",
-        border: "1px solid rgba(255,255,255,0.14)",
-      },
-      arrow: {
-        color: "#0f172a",
-      },
-    },
-  },
-};
+    shape: { borderRadius: 18 },
+    typography: buildTypography(),
+    components: buildSaasComponents({
+      mode,
+      backgroundDefault,
+      surfaceBackground,
+      surfaceBorder,
+      surfaceShadow,
+      paperShadow,
+      appBarBackground,
+      backdropBackground,
+      tooltipBackground,
+      tooltipArrow,
+      textPrimary,
+      textSecondary,
+    }),
+  });
+}
 
 export const THEME_PRESETS = [
   {
     id: "dark_glass",
     name: "Dark Glass (Default)",
-    theme: createTheme({
-      palette: {
-        mode: "dark",
-        primary: { main: "#2563eb" },
-        background: {
-          default: "#0b1220",
-          paper: "rgba(255,255,255,0.06)",
-        },
-      },
-      shape: { borderRadius: 14 },
-      components: baseComponents,
+    theme: createPresetTheme({
+      mode: "dark",
+      primary: "#38bdf8",
+      backgroundDefault: "#060b16",
+      surfaceBackground: "rgba(10, 17, 32, 0.82)",
+      surfaceBorder: "rgba(148, 163, 184, 0.16)",
+      surfaceShadow: "0 24px 70px rgba(2, 6, 23, 0.34)",
+      paperShadow: "0 24px 70px rgba(2, 6, 23, 0.34)",
+      appBarBackground: "rgba(7, 16, 31, 0.78)",
+      backdropBackground: "rgba(2, 6, 23, 0.72)",
+      tooltipBackground: "#0f172a",
+      tooltipArrow: "#0f172a",
+      textPrimary: "#e5eefc",
+      textSecondary: "#9aa8bf",
     }),
   },
   {
     id: "dark_solid",
     name: "Dark Solid",
-    theme: createTheme({
-      palette: {
-        mode: "dark",
-        primary: { main: "#22c55e" },
-        background: {
-          default: "#0b1020",
-          paper: "#0f172a",
-        },
-      },
-      shape: { borderRadius: 14 },
-      components: baseComponents,
+    theme: createPresetTheme({
+      mode: "dark",
+      primary: "#22c55e",
+      backgroundDefault: "#070b14",
+      surfaceBackground: "#0f172a",
+      surfaceBorder: "rgba(148, 163, 184, 0.16)",
+      surfaceShadow: "0 24px 70px rgba(2, 6, 23, 0.36)",
+      paperShadow: "0 24px 70px rgba(2, 6, 23, 0.36)",
+      appBarBackground: "rgba(7, 12, 24, 0.9)",
+      backdropBackground: "rgba(2, 6, 23, 0.76)",
+      tooltipBackground: "#0f172a",
+      tooltipArrow: "#0f172a",
+      textPrimary: "#e5eefc",
+      textSecondary: "#9aa8bf",
     }),
   },
   {
     id: "light_clean",
     name: "Light Clean",
-    theme: createTheme({
-      palette: {
-        mode: "light",
-        primary: { main: "#2563eb" },
-        background: {
-          default: "#f5f7fb",
-          paper: "#ffffff",
-        },
-      },
-      shape: { borderRadius: 14 },
-      components: {
-        ...baseComponents,
-        MuiPopover: {
-          styleOverrides: {
-            paper: {
-              backgroundImage: "none",
-              backgroundColor: "#ffffff",
-              border: "1px solid rgba(15,23,42,0.12)",
-              boxShadow: "0 16px 40px rgba(15,23,42,0.18)",
-            },
-          },
-        },
-        MuiMenu: {
-          styleOverrides: {
-            paper: {
-              backgroundImage: "none",
-              backgroundColor: "#ffffff",
-              border: "1px solid rgba(15,23,42,0.12)",
-              boxShadow: "0 16px 40px rgba(15,23,42,0.18)",
-            },
-          },
-        },
-        MuiAutocomplete: {
-          styleOverrides: {
-            paper: {
-              backgroundImage: "none",
-              backgroundColor: "#ffffff",
-              border: "1px solid rgba(15,23,42,0.12)",
-              boxShadow: "0 16px 40px rgba(15,23,42,0.18)",
-            },
-          },
-        },
-        MuiDialog: {
-          styleOverrides: {
-            paper: {
-              backgroundImage: "none",
-              backgroundColor: "#ffffff",
-              border: "1px solid rgba(15,23,42,0.12)",
-            },
-          },
-        },
-        MuiBackdrop: {
-          styleOverrides: {
-            root: {
-              backgroundColor: "rgba(15,23,42,0.35)",
-            },
-          },
-        },
-        MuiTooltip: {
-          styleOverrides: {
-            tooltip: {
-              backgroundColor: "#111827",
-              border: "1px solid rgba(255,255,255,0.18)",
-            },
-            arrow: { color: "#111827" },
-          },
-        },
-      },
+    theme: createPresetTheme({
+      mode: "light",
+      primary: "#2563eb",
+      backgroundDefault: "#f4f7fb",
+      surfaceBackground: "#ffffff",
+      surfaceBorder: "rgba(15, 23, 42, 0.10)",
+      surfaceShadow: "0 20px 50px rgba(15, 23, 42, 0.10)",
+      paperShadow: "0 20px 50px rgba(15, 23, 42, 0.10)",
+      appBarBackground: "rgba(255, 255, 255, 0.88)",
+      backdropBackground: "rgba(15, 23, 42, 0.35)",
+      tooltipBackground: "#111827",
+      tooltipArrow: "#111827",
+      textPrimary: "#0f172a",
+      textSecondary: "#475569",
     }),
   },
   {
     id: "high_contrast",
     name: "High Contrast",
-    theme: createTheme({
-      palette: {
-        mode: "dark",
-        primary: { main: "#fbbf24" },
-        background: {
-          default: "#000000",
-          paper: "#0b0b0b",
-        },
-      },
-      shape: { borderRadius: 10 },
-      components: baseComponents,
+    theme: createPresetTheme({
+      mode: "dark",
+      primary: "#fbbf24",
+      backgroundDefault: "#000000",
+      surfaceBackground: "#0b0b0b",
+      surfaceBorder: "rgba(255, 255, 255, 0.16)",
+      surfaceShadow: "0 24px 70px rgba(0, 0, 0, 0.5)",
+      paperShadow: "0 24px 70px rgba(0, 0, 0, 0.5)",
+      appBarBackground: "rgba(0, 0, 0, 0.92)",
+      backdropBackground: "rgba(0, 0, 0, 0.85)",
+      tooltipBackground: "#0b0b0b",
+      tooltipArrow: "#0b0b0b",
+      textPrimary: "#ffffff",
+      textSecondary: "#e5e7eb",
     }),
   },
   {
     id: "midnight_purple",
     name: "Midnight Purple",
-    theme: createTheme({
-      palette: {
-        mode: "dark",
-        primary: { main: "#a78bfa" },
-        background: {
-          default: "#090a14",
-          paper: "rgba(167,139,250,0.08)",
-        },
-      },
-      shape: { borderRadius: 14 },
-      components: baseComponents,
+    theme: createPresetTheme({
+      mode: "dark",
+      primary: "#a78bfa",
+      backgroundDefault: "#080912",
+      surfaceBackground: "rgba(18, 20, 35, 0.88)",
+      surfaceBorder: "rgba(167, 139, 250, 0.16)",
+      surfaceShadow: "0 24px 70px rgba(2, 6, 23, 0.38)",
+      paperShadow: "0 24px 70px rgba(2, 6, 23, 0.38)",
+      appBarBackground: "rgba(8, 10, 18, 0.86)",
+      backdropBackground: "rgba(2, 6, 23, 0.74)",
+      tooltipBackground: "#111827",
+      tooltipArrow: "#111827",
+      textPrimary: "#f3f4ff",
+      textSecondary: "#b4b6d3",
     }),
   },
 ];
@@ -204,5 +149,3 @@ export const THEME_PRESETS = [
 export function getThemeById(id) {
   return THEME_PRESETS.find((t) => t.id === id)?.theme || THEME_PRESETS[0].theme;
 }
-
-

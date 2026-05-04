@@ -8,7 +8,9 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 
 export default function SubadminFormDialog({ open, onClose, onSubmit, schoolId }) {
@@ -69,12 +71,35 @@ export default function SubadminFormDialog({ open, onClose, onSubmit, schoolId }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Create Subadmin</DialogTitle>
-      <DialogContent>
-        <Box sx={{ pt: 1 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="md"
+      PaperProps={{
+        sx: {
+          bgcolor: "rgba(9, 16, 32, 0.96)",
+          border: "1px solid rgba(148, 163, 184, 0.18)",
+          backdropFilter: "blur(20px)",
+          boxShadow: "0 30px 80px rgba(2, 6, 23, 0.55)",
+          borderRadius: 4,
+        },
+      }}
+    >
+      <DialogTitle className="border-b border-white/10 bg-[linear-gradient(135deg,rgba(16,185,129,0.10),rgba(14,165,233,0.04))] pb-4">
+        <Stack spacing={0.4}>
+          <Typography fontWeight={900} className="font-['Montserrat'] text-[1rem] text-slate-100">
+            Create Subadmin
+          </Typography>
+          <Typography variant="caption" className="text-[0.72rem] text-slate-400">
+            Add a new user under the selected school
+          </Typography>
+        </Stack>
+      </DialogTitle>
+      <DialogContent className="pt-6">
+        <Box className="pt-1">
           {err ? (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" className="mb-4 rounded-2xl border border-red-400/20 bg-red-950/40">
               {String(err)}
             </Alert>
           ) : null}
@@ -109,11 +134,11 @@ export default function SubadminFormDialog({ open, onClose, onSubmit, schoolId }
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">
+      <DialogActions sx={{ px: 3, pb: 2.5, pt: 1.5, borderTop: "1px solid rgba(148, 163, 184, 0.12)" }}>
+        <Button onClick={onClose} color="inherit" className="!rounded-xl !px-4 !py-2 !text-sm">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} variant="contained" disabled={!canSubmit || saving}>
+        <Button onClick={handleSubmit} variant="contained" disabled={!canSubmit || saving} className="!rounded-xl !px-4 !py-2 !text-sm !shadow-none">
           {saving ? "Creating..." : "Create"}
         </Button>
       </DialogActions>

@@ -1,383 +1,202 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { logoutThunk } from "../../store/authSlice";
-import * as adminService from "../services/adminService";
-import {
-  Alert,
-  AppBar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Divider,
-  Grid,
-  Stack,
-  TextField,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { Box, Button, CardContent, Chip, Grid, Stack, Typography } from "@mui/material";
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import AccountTreeRoundedIcon from "@mui/icons-material/AccountTreeRounded";
-import ThemeSettingsButton from "../../theme/ThemeSettingsButton";
-import NotificationsBell from "../../notifications/NotificationsBell";
-
-import SchoolsTable from "./components/SchoolsTable";
-import SubadminsTable from "./components/SubadminsTable";
-import SubadminFormDialog from "./components/SubadminFormDialog";
+import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
+import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
+import { Panel } from "./adminPageUi";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { accessToken, user, hydrateStatus } = useAppSelector((s) => s.auth);
+  const { me, user, schools, subadmins, selectedSchool, currentRole, roleInfo } = useOutletContext();
 
-  const [me, setMe] = useState(null);
-  const [schools, setSchools] = useState([]);
-  const [selectedSchoolId, setSelectedSchoolId] = useState("");
-  const [subadmins, setSubadmins] = useState([]);
+  const metrics = [
+    {
+      label: "Schools",
+      value: schools.length,
+      caption: "Registered campuses",
+      icon: SchoolRoundedIcon,
+      accent: "primary.main",
+    },
+    {
+      label: "Subadmins",
+      value: subadmins.length,
+      caption: "Linked to the active school",
+      icon: GroupsRoundedIcon,
+      accent: "success.main",
+    },
+    {
+      label: "Role",
+      value: currentRole,
+      caption: "Current workspace access",
+      icon: WorkspacePremiumRoundedIcon,
+      accent: "info.main",
+    },
+  ];
 
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
-
-  const [subLoading, setSubLoading] = useState(false);
-  const [subErr, setSubErr] = useState(null);
-  const [openCreateSubadmin, setOpenCreateSubadmin] = useState(false);
-
-  const [newSchool, setNewSchool] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    street: "",
-    city: "",
-    state: "",
-    country: "",
-    postal_code: "",
-  });
-
-  // Guard: cookie-based sessions may not have accessToken; rely on hydrated user.role instead.
-  useEffect(() => {
-    if (hydrateStatus === "loading") return;
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (user.role !== "admin") {
-      navigate("/");
-    }
-  }, [hydrateStatus, navigate, user]);
-
-  const refresh = async () => {
-    setLoading(true);
-    setErr(null);
-    try {
-      const [admin, allSchools] = await Promise.all([adminService.getMe(), adminService.getAllSchools()]);
-      setMe(admin);
-      setSchools(allSchools);
-      if (!selectedSchoolId && allSchools?.length) setSelectedSchoolId(allSchools[0].id);
-    } catch (e) {
-      setErr(e?.response?.data?.detail || e?.message || "Failed to load admin data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadSubadmins = async (schoolId) => {
-    if (!schoolId) return;
-    setSubLoading(true);
-    setSubErr(null);
-    try {
-      const data = await adminService.getSubadminsBySchoolId(schoolId);
-      setSubadmins(data);
-    } catch (e) {
-      setSubErr(e?.response?.data?.detail || e?.message || "Failed to load subadmins");
-    } finally {
-      setSubLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (selectedSchoolId) loadSubadmins(selectedSchoolId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSchoolId]);
-
-  const onLogout = () => {
-    dispatch(logoutThunk());
-    navigate("/login");
-  };
-
-  const canCreate = useMemo(() => {
-    return Boolean(
-      newSchool.name.trim() &&
-        newSchool.street.trim() &&
-        newSchool.city.trim() &&
-        newSchool.state.trim() &&
-        newSchool.country.trim() &&
-        newSchool.postal_code.trim()
-    );
-  }, [newSchool]);
-
-  const onCreateSchool = async (e) => {
-    e.preventDefault();
-    if (!canCreate) return;
-    setErr(null);
-    try {
-      await adminService.addSchool({
-        name: newSchool.name,
-        phone: newSchool.phone || null,
-        email: newSchool.email || null,
-        address: {
-          street: newSchool.street,
-          city: newSchool.city,
-          state: newSchool.state,
-          country: newSchool.country,
-          postal_code: newSchool.postal_code,
-        },
-      });
-      setNewSchool({
-        name: "",
-        phone: "",
-        email: "",
-        street: "",
-        city: "",
-        state: "",
-        country: "",
-        postal_code: "",
-      });
-      await refresh();
-    } catch (e2) {
-      setErr(e2?.response?.data?.detail || e2?.message || "Failed to create school");
-    }
-  };
-
-  const onCreateSubadmin = async (payload) => {
-    await adminService.createSubadmin(payload);
-    await loadSubadmins(selectedSchoolId);
-  };
+  const taskCards = [
+    {
+      title: "Create School",
+      text: "Add a new campus with contact and address details, then keep moving through the same admin workflow.",
+      action: () => navigate("/admin/create-school"),
+    },
+    {
+      title: "Create Subadmins",
+      text: "Pick a school and manage the users responsible for that campus from a dedicated page.",
+      action: () => navigate("/admin/create-subadmins"),
+    },
+    {
+      title: "Profile",
+      text: "Review the admin account information that is already loaded from the existing profile service.",
+      action: () => navigate("/admin/profile"),
+    },
+  ];
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-      <AppBar position="sticky" color="transparent" elevation={0} sx={{ backdropFilter: "blur(10px)" }}>
-        <Toolbar>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
-            <SchoolRoundedIcon color="primary" />
+    <Stack spacing={2.5}>
+      <Panel>
+        <CardContent className="relative z-10 p-5 md:p-6">
+          <Stack spacing={2.25}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: "wrap" }}>
+              <Chip icon={<WorkspacePremiumRoundedIcon />} label={roleInfo?.badge || "Administrator"} color="primary" className="!rounded-full !text-[0.72rem]" />
+              <Chip label={`${schools.length} schools`} variant="outlined" className="!rounded-full !text-[0.72rem]" />
+              <Chip label={`${subadmins.length} subadmins`} variant="outlined" className="!rounded-full !text-[0.72rem]" />
+            </Stack>
+
             <Box>
-              <Typography fontWeight={900}>Admin Dashboard</Typography>
-              <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                Manage schools and subadmins
+              <Typography variant="h4" fontWeight={900} className="mb-2 font-['Montserrat'] text-[1.55rem] leading-tight md:text-[1.85rem]">
+                Welcome back, {me?.name || user?.name || "Admin"}
+              </Typography>
+              <Typography variant="body1" className="max-w-3xl text-sm leading-7 text-slate-400 md:text-[0.95rem]">
+                {roleInfo?.subtitle || "Manage schools, create subadmins, and keep the admin workspace organized."}
               </Typography>
             </Box>
+
+            <Stack direction="row" spacing={1.25} className="flex-wrap">
+              <Button
+                variant="contained"
+                onClick={() => navigate("/admin/create-school")}
+                startIcon={<SchoolRoundedIcon />}
+                className="!rounded-xl !px-4 !py-2 !text-sm !shadow-none transition-transform duration-200 hover:scale-[1.01]"
+              >
+                Create School
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => navigate("/admin/create-subadmins")}
+                startIcon={<GroupsRoundedIcon />}
+                className="!rounded-xl !px-4 !py-2 !text-sm"
+              >
+                Create Subadmins
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => navigate("/admin/profile")}
+                startIcon={<ManageAccountsRoundedIcon />}
+                className="!rounded-xl !px-4 !py-2 !text-sm"
+              >
+                Profile
+              </Button>
+            </Stack>
           </Stack>
+        </CardContent>
+      </Panel>
 
-          <Stack direction="row" spacing={1}>
-            <Button onClick={refresh} variant="outlined" startIcon={<RefreshRoundedIcon />}>
-              Refresh
-            </Button>
-            <NotificationsBell role={user?.role} />
-            <ThemeSettingsButton />
-            <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />}>
-              Logout
-            </Button>
-          </Stack>
-        </Toolbar>
-      </AppBar>
-
-      <Container maxWidth="lg" sx={{ py: 3 }}>
-        {err ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {String(err)}
-          </Alert>
-        ) : null}
-
-        <SubadminFormDialog
-          open={openCreateSubadmin}
-          onClose={() => setOpenCreateSubadmin(false)}
-          onSubmit={onCreateSubadmin}
-          schoolId={selectedSchoolId}
-        />
-
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
-            <Card elevation={0} sx={{ bgcolor: "background.paper", border: "1px solid rgba(255,255,255,0.12)" }}>
-              <CardContent>
-                <Typography fontWeight={800} sx={{ mb: 1 }}>
-                  Profile
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                {loading ? (
-                  <Typography sx={{ opacity: 0.7 }}>Loading...</Typography>
-                ) : (
-                  <Stack spacing={0.5}>
-                    <Typography>
-                      <b>{me?.name}</b>
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                      {me?.email}
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                      {me?.phone || "-"}
-                    </Typography>
-                    <Typography variant="caption" sx={{ opacity: 0.65, mt: 1 }}>
-                      Role: {me?.role}
-                    </Typography>
+      <Grid container spacing={2.5}>
+        {metrics.map((metric) => {
+          const Icon = metric.icon;
+          return (
+            <Grid key={metric.label} item xs={12} md={4}>
+              <Panel>
+                <CardContent className="relative z-10 p-5 md:p-6">
+                  <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+                    <Box>
+                      <Typography variant="body2" className="mb-1 text-[0.72rem] uppercase tracking-[0.16em] text-slate-400">
+                        {metric.label}
+                      </Typography>
+                      <Typography variant="h4" fontWeight={900} className="break-words font-['Montserrat'] text-[1.55rem] leading-tight text-slate-100 md:text-[1.8rem]">
+                        {metric.value}
+                      </Typography>
+                      <Typography variant="body2" className="mt-1 text-sm text-slate-400">
+                        {metric.caption}
+                      </Typography>
+                    </Box>
+                    <Box
+                      className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/5"
+                      style={{ color: metric.accent }}
+                    >
+                      <Icon />
+                    </Box>
                   </Stack>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={8}>
-            <Card elevation={0} sx={{ bgcolor: "background.paper", border: "1px solid rgba(255,255,255,0.12)" }}>
-              <CardContent>
-                <Typography fontWeight={800} sx={{ mb: 1 }}>
-                  Create School
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Box component="form" onSubmit={onCreateSchool}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        label="School name"
-                        value={newSchool.name}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, name: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                      <TextField
-                        label="Phone"
-                        value={newSchool.phone}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, phone: e.target.value }))}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                      <TextField
-                        label="Email"
-                        type="email"
-                        value={newSchool.email}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, email: e.target.value }))}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        label="Street"
-                        value={newSchool.street}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, street: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        label="City"
-                        value={newSchool.city}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, city: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        label="State"
-                        value={newSchool.state}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, state: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        label="Country"
-                        value={newSchool.country}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, country: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        label="Postal code"
-                        value={newSchool.postal_code}
-                        onChange={(e) => setNewSchool((s) => ({ ...s, postal_code: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Button type="submit" variant="contained" disabled={!canCreate} startIcon={<AddRoundedIcon />}>
-                        Create
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={7}>
-            {loading ? (
-              <Card elevation={0} sx={{ bgcolor: "background.paper", border: "1px solid rgba(255,255,255,0.12)" }}>
-                <CardContent>
-                  <Typography sx={{ opacity: 0.7 }}>Loading schools...</Typography>
                 </CardContent>
-              </Card>
-            ) : (
-              <SchoolsTable schools={schools} selectedSchoolId={selectedSchoolId} onSelect={setSelectedSchoolId} />
-            )}
-          </Grid>
+              </Panel>
+            </Grid>
+          );
+        })}
+      </Grid>
 
-          <Grid item xs={12} md={5}>
-            <Card elevation={0} sx={{ bgcolor: "background.paper", border: "1px solid rgba(255,255,255,0.12)" }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <AccountTreeRoundedIcon color="primary" />
-                    <Typography fontWeight={800}>Subadmins</Typography>
-                  </Stack>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<AddRoundedIcon />}
-                    disabled={!selectedSchoolId}
-                    onClick={() => setOpenCreateSubadmin(true)}
-                  >
-                    Create
-                  </Button>
-                </Stack>
-
-                <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                  Selected school: {selectedSchoolId || "-"}
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-
-                {subErr ? (
-                  <Alert severity="error" sx={{ mb: 2 }}>
-                    {String(subErr)}
-                  </Alert>
-                ) : null}
-
-                {subLoading ? (
-                  <Typography sx={{ opacity: 0.7 }}>Loading...</Typography>
-                ) : (
-                  <SubadminsTable subadmins={subadmins} />
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
+      <Grid container spacing={2.5}>
+        <Grid item xs={12} md={4}>
+          <Panel sx={{ height: "100%" }}>
+            <CardContent className="relative z-10 p-5 md:p-6">
+              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
+                Dashboard
+              </Typography>
+              <Typography variant="body2" className="text-sm leading-7 text-slate-400">
+                This admin workspace keeps the core school operations in one place. Use it to create schools, assign
+                subadmins, and review your profile without changing the underlying data flow.
+              </Typography>
+            </CardContent>
+          </Panel>
         </Grid>
-      </Container>
-    </Box>
+
+        <Grid item xs={12} md={4}>
+          <Panel sx={{ height: "100%" }}>
+            <CardContent className="relative z-10 p-5 md:p-6">
+              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
+                Active School
+              </Typography>
+              <Typography variant="body2" className="text-sm leading-7 text-slate-400">
+                {selectedSchool ? selectedSchool.name : "No school selected yet. Choose one from the subadmin page."}
+              </Typography>
+            </CardContent>
+          </Panel>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Panel sx={{ height: "100%" }}>
+            <CardContent className="relative z-10 p-5 md:p-6">
+              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
+                Quick Paths
+              </Typography>
+              <Typography variant="body2" className="text-sm leading-7 text-slate-400">
+                The sidebar now groups the admin tasks into separate pages, so the dashboard stays brief and focused.
+              </Typography>
+            </CardContent>
+          </Panel>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2.5}>
+        {taskCards.map((card) => (
+          <Grid key={card.title} item xs={12} md={4}>
+            <Panel sx={{ height: "100%" }}>
+              <CardContent className="relative z-10 p-5 md:p-6">
+                <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
+                  {card.title}
+                </Typography>
+                <Typography variant="body2" className="mb-4 text-sm leading-7 text-slate-400">
+                  {card.text}
+                </Typography>
+                <Button variant="outlined" onClick={card.action} className="!rounded-xl !px-4 !py-2 !text-sm">
+                  Open
+                </Button>
+              </CardContent>
+            </Panel>
+          </Grid>
+        ))}
+      </Grid>
+    </Stack>
   );
 }

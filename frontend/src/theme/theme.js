@@ -1,75 +1,33 @@
 import { createTheme } from "@mui/material/styles";
+import { buildSaasComponents, buildTypography } from "./themeShared";
 
 export const theme = createTheme({
   palette: {
     mode: "dark",
-    primary: { main: "#2563eb" },
+    primary: { main: "#38bdf8" },
     background: {
-      default: "#0b1220",
-      paper: "rgba(255,255,255,0.06)",
+      default: "#060b16",
+      paper: "rgba(10, 17, 32, 0.82)",
+    },
+    text: {
+      primary: "#e5eefc",
+      secondary: "#9aa8bf",
     },
   },
-  shape: { borderRadius: 14 },
-  components: {
-    // Make popups/dropdowns/dialogs readable (opaque) even if cards are slightly translucent.
-    MuiPopover: {
-      styleOverrides: {
-        paper: {
-          backgroundImage: "none",
-          backgroundColor: "#0f172a", // solid dark
-          border: "1px solid rgba(255,255,255,0.14)",
-          boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
-        },
-      },
-    },
-    MuiMenu: {
-      styleOverrides: {
-        paper: {
-          backgroundImage: "none",
-          backgroundColor: "#0f172a",
-          border: "1px solid rgba(255,255,255,0.14)",
-          boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
-        },
-      },
-    },
-    MuiAutocomplete: {
-      styleOverrides: {
-        paper: {
-          backgroundImage: "none",
-          backgroundColor: "#0f172a",
-          border: "1px solid rgba(255,255,255,0.14)",
-          boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
-        },
-      },
-    },
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          backgroundImage: "none",
-          backgroundColor: "#0f172a",
-          border: "1px solid rgba(255,255,255,0.14)",
-        },
-      },
-    },
-    MuiBackdrop: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "rgba(0,0,0,0.72)",
-        },
-      },
-    },
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          backgroundColor: "#0f172a",
-          border: "1px solid rgba(255,255,255,0.14)",
-        },
-        arrow: {
-          color: "#0f172a",
-        },
-      },
-    },
-  },
+  shape: { borderRadius: 18 },
+  typography: buildTypography(),
+  components: buildSaasComponents({
+    mode: "dark",
+    backgroundDefault: "#060b16",
+    surfaceBackground: "rgba(10, 17, 32, 0.82)",
+    surfaceBorder: "rgba(148, 163, 184, 0.16)",
+    surfaceShadow: "0 24px 70px rgba(2, 6, 23, 0.34)",
+    paperShadow: "0 24px 70px rgba(2, 6, 23, 0.34)",
+    appBarBackground: "rgba(7, 16, 31, 0.78)",
+    backdropBackground: "rgba(2, 6, 23, 0.72)",
+    tooltipBackground: "#0f172a",
+    tooltipArrow: "#0f172a",
+    textPrimary: "#e5eefc",
+    textSecondary: "#9aa8bf",
+  }),
 });
-
-

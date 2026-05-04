@@ -6,6 +6,9 @@ import { hydrateThunk } from "./store/authSlice";
 import AdminLayout from "./admin/pages/AdminLayout";
 import AdminLogin from "./admin/pages/AdminLogin";
 import AdminDashboard from "./admin/pages/AdminDashboard";
+import CreateSchoolPage from "./admin/pages/CreateSchoolPage";
+import CreateSubadminsPage from "./admin/pages/CreateSubadminsPage";
+import ProfilePage from "./admin/pages/ProfilePage";
 import SubadminLayout from "./subadmin/pages/SubadminLayout";
 import SubadminDashboard from "./subadmin/pages/SubadminDashboard";
 import TeacherLayout from "./teacher/pages/TeacherLayout";
@@ -57,8 +60,12 @@ function App() {
       <Route path="/login" element={<AdminLogin />} />
 
       <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="login" element={<AdminLogin />} />
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="create-school" element={<CreateSchoolPage />} />
+        <Route path="create-subadmins" element={<CreateSubadminsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       <Route path="/subadmin" element={<SubadminLayout />}>
