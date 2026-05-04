@@ -11,6 +11,15 @@ import CreateSubadminsPage from "./admin/pages/CreateSubadminsPage";
 import ProfilePage from "./admin/pages/ProfilePage";
 import SubadminLayout from "./subadmin/pages/SubadminLayout";
 import SubadminDashboard from "./subadmin/pages/SubadminDashboard";
+import SubadminSubadminsPage from "./subadmin/pages/SubadminSubadminsPage";
+import SubadminSettingsPage from "./subadmin/pages/SubadminSettingsPage";
+import ClassesTab from "./subadmin/pages/tabs/ClassesTab";
+import SessionsTab from "./subadmin/pages/tabs/SessionsTab";
+import SubjectsTab from "./subadmin/pages/tabs/SubjectsTab";
+import DepartmentsTab from "./subadmin/pages/tabs/DepartmentsTab";
+import TeachersTab from "./subadmin/pages/tabs/TeachersTab";
+import StudentsTab from "./subadmin/pages/tabs/StudentsTab";
+import PrinciplesTab from "./subadmin/pages/tabs/PrinciplesTab";
 import TeacherLayout from "./teacher/pages/TeacherLayout";
 import TeacherDashboard from "./teacher/pages/TeacherDashboard";
 import StudentLayout from "./students/pages/StudentLayout";
@@ -69,7 +78,17 @@ function App() {
       </Route>
 
       <Route path="/subadmin" element={<SubadminLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<SubadminDashboard />} />
+        <Route path="subadmins" element={<SubadminSubadminsPage />} />
+        <Route path="classes" element={<ClassesTab />} />
+        <Route path="sessions" element={<SessionsTab />} />
+        <Route path="subjects" element={<SubjectsTab />} />
+        <Route path="departments" element={<DepartmentsTab />} />
+        <Route path="teachers" element={<TeachersTab />} />
+        <Route path="students" element={<StudentsTab />} />
+        <Route path="principles" element={<PrinciplesTab />} />
+        <Route path="settings" element={<SubadminSettingsPage />} />
       </Route>
 
       <Route path="/teacher" element={<TeacherLayout />}>
