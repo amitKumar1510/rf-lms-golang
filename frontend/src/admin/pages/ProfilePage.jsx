@@ -9,6 +9,19 @@ export default function ProfilePage() {
 
   return (
     <Grid container spacing={2.5}>
+
+      <Panel>
+        <CardContent className="relative z-10 p-5 md:p-6">
+          <Typography fontWeight={600} className="mb-1 font-inherit text-[1rem] text-slate-100">
+            Workspace summary
+          </Typography>
+          <Typography variant="body2" className="text-sm leading-7 text-slate-400">
+            Admin accounts are used to oversee the school setup and subadmin assignment flow. The sidebar keeps the
+            four admin pages grouped together so the workspace feels more like the design you shared.
+          </Typography>
+        </CardContent>
+      </Panel>
+
       <Grid item xs={12} md={5}>
         <Panel>
           <Box className="border-b border-white/10 bg-white/[0.03] px-5 py-4">
@@ -20,11 +33,11 @@ export default function ProfilePage() {
             ) : (
               <Stack spacing={1.75}>
                 <Stack direction="row" spacing={1.5} alignItems="center">
-                  <Box className="grid h-14 w-14 place-items-center rounded-full bg-sky-500 text-[1.1rem] font-black text-white shadow-[0_16px_30px_rgba(56,189,248,0.25)]">
+                  <Box className="grid h-14 w-14 place-items-center rounded-xl bg-sky-500 text-[1.1rem] font-black text-white shadow-[0_16px_30px_rgba(56,189,248,0.25)]">
                     {(me?.name || user?.name || "A").slice(0, 1).toUpperCase()}
                   </Box>
                   <Box sx={{ minWidth: 0 }}>
-                    <Typography fontWeight={900} variant="h6" className="font-['Montserrat'] text-[1rem] leading-tight text-slate-100">
+                    <Typography fontWeight={600} variant="h6" className="font-inherit text-[1rem] leading-tight text-slate-100">
                       {me?.name || user?.name || "Admin"}
                     </Typography>
                     <Typography variant="body2" className="break-words text-sm text-slate-400">
@@ -34,9 +47,9 @@ export default function ProfilePage() {
                 </Stack>
 
                 <Stack direction="row" spacing={1} className="flex-wrap">
-                  <Chip icon={<WorkspacePremiumRoundedIcon />} label={user?.role || "admin"} color="primary" className="!rounded-full !text-[0.72rem]" />
-                  <Chip label={`${schools.length} schools`} variant="outlined" className="!rounded-full !text-[0.72rem]" />
-                  <Chip label={`${subadmins.length} subadmins`} variant="outlined" className="!rounded-full !text-[0.72rem]" />
+                  <Chip icon={<WorkspacePremiumRoundedIcon />} label={user?.role || "admin"} color="primary" className="!rounded-lg !text-[0.72rem]" />
+                  <Chip label={`${schools.length} schools`} variant="outlined" className="!rounded-lg !text-[0.72rem]" />
+                  <Chip label={`${subadmins.length} subadmins`} variant="outlined" className="!rounded-lg !text-[0.72rem]" />
                 </Stack>
 
                 <Stack spacing={0.9}>
@@ -49,7 +62,7 @@ export default function ProfilePage() {
                 </Stack>
 
                 <Box
-                  className="mt-1 rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-3"
+                  className="mt-1 rounded-xl border border-sky-500/20 bg-sky-500/10 px-4 py-3"
                 >
                   <Typography variant="caption" className="mb-1 block text-[0.72rem] text-slate-400">
                     Account note
@@ -67,9 +80,9 @@ export default function ProfilePage() {
 
       <Grid item xs={12} md={7}>
         <Stack spacing={2.5}>
-          <Panel>
+          {/* <Panel>
             <CardContent className="relative z-10 p-5 md:p-6">
-              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
+              <Typography fontWeight={600} className="mb-1 font-inherit text-[1rem] text-slate-100">
                 Workspace summary
               </Typography>
               <Typography variant="body2" className="text-sm leading-7 text-slate-400">
@@ -77,17 +90,17 @@ export default function ProfilePage() {
                 four admin pages grouped together so the workspace feels more like the design you shared.
               </Typography>
             </CardContent>
-          </Panel>
+          </Panel> */}
 
           <Panel>
             <CardContent className="relative z-10 p-5 md:p-6">
-              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
+              <Typography fontWeight={600} className="mb-1 font-inherit text-[1rem] text-slate-100">
                 Quick stats
               </Typography>
               <Stack direction="row" spacing={1.5} className="flex-wrap">
-                <Chip label={`${schools.length} schools`} className="!rounded-full !text-[0.72rem]" />
-                <Chip label={`${subadmins.length} subadmins`} className="!rounded-full !text-[0.72rem]" />
-                <Chip label={selectedSchool?.name || "No school selected"} variant="outlined" className="!rounded-full !text-[0.72rem]" />
+                <Chip label={`${schools.length} schools`} className="!rounded-lg !text-[0.72rem]" />
+                <Chip label={`${subadmins.length} subadmins`} className="!rounded-lg !text-[0.72rem]" />
+                <Chip label={selectedSchool?.name || "No school selected"} variant="outlined" className="!rounded-lg !text-[0.72rem]" />
               </Stack>
             </CardContent>
           </Panel>
@@ -95,11 +108,11 @@ export default function ProfilePage() {
           <Panel>
             <CardContent className="relative z-10 p-5 md:p-6">
               <Stack direction="row" spacing={1.25} alignItems="center">
-                <Box className="grid h-10 w-10 place-items-center rounded-xl bg-white/5 text-sky-400">
+                <Box className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-sky-400">
                   <ManageAccountsRoundedIcon fontSize="small" />
                 </Box>
                 <Box>
-                  <Typography fontWeight={900} className="font-['Montserrat'] text-[0.95rem] text-slate-100">
+                  <Typography fontWeight={600} className="font-inherit text-[0.95rem] text-slate-100">
                     Profile
                   </Typography>
                   <Typography variant="caption" className="text-[0.72rem] text-slate-400">

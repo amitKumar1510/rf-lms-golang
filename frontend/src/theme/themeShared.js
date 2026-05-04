@@ -1,43 +1,43 @@
 import { alpha } from "@mui/material/styles";
 
-export const headingFontFamily = "'Montserrat', 'Segoe UI', sans-serif";
-export const bodyFontFamily = "'Raleway', 'Segoe UI', sans-serif";
+export const headingFontFamily = "'Inter', 'Segoe UI', sans-serif";
+export const bodyFontFamily = "'Inter', 'Segoe UI', sans-serif";
 
 export function buildTypography() {
   const headingBase = {
     fontFamily: headingFontFamily,
-    fontWeight: 800,
-    letterSpacing: "-0.04em",
-    lineHeight: 1.1,
+    fontWeight: 600,
+    letterSpacing: "-0.02em",
+    lineHeight: 1.2,
   };
 
   return {
     fontFamily: bodyFontFamily,
-    h1: { ...headingBase, fontSize: "2.9rem" },
-    h2: { ...headingBase, fontSize: "2.35rem" },
-    h3: { ...headingBase, fontSize: "1.95rem" },
-    h4: { ...headingBase, fontSize: "1.55rem" },
-    h5: { ...headingBase, fontSize: "1.2rem" },
-    h6: { ...headingBase, fontSize: "1rem", fontWeight: 900 },
-    subtitle1: { fontFamily: bodyFontFamily, fontWeight: 600, lineHeight: 1.55, fontSize: "0.95rem" },
-    subtitle2: { fontFamily: bodyFontFamily, fontWeight: 600, lineHeight: 1.55, fontSize: "0.875rem" },
-    body1: { fontFamily: bodyFontFamily, lineHeight: 1.7, fontSize: "0.95rem" },
-    body2: { fontFamily: bodyFontFamily, lineHeight: 1.6, fontSize: "0.875rem" },
+    h1: { ...headingBase, fontSize: "2rem" },
+    h2: { ...headingBase, fontSize: "1.75rem" },
+    h3: { ...headingBase, fontSize: "1.5rem" },
+    h4: { ...headingBase, fontSize: "1.25rem" },
+    h5: { ...headingBase, fontSize: "1.125rem" },
+    h6: { ...headingBase, fontSize: "1rem" },
+    subtitle1: { fontFamily: bodyFontFamily, fontWeight: 500, lineHeight: 1.55, fontSize: "0.875rem" },
+    subtitle2: { fontFamily: bodyFontFamily, fontWeight: 500, lineHeight: 1.55, fontSize: "0.8125rem" },
+    body1: { fontFamily: bodyFontFamily, lineHeight: 1.6, fontSize: "0.875rem" },
+    body2: { fontFamily: bodyFontFamily, lineHeight: 1.5, fontSize: "0.875rem" },
     button: {
       fontFamily: headingFontFamily,
-      fontWeight: 800,
+      fontWeight: 500,
       textTransform: "none",
       letterSpacing: "0.01em",
-      fontSize: "0.9rem",
+      fontSize: "0.875rem",
     },
     overline: {
       fontFamily: headingFontFamily,
-      fontWeight: 700,
-      letterSpacing: "0.12em",
+      fontWeight: 500,
+      letterSpacing: "0.08em",
       textTransform: "uppercase",
-      fontSize: "0.72rem",
+      fontSize: "0.75rem",
     },
-    caption: { fontFamily: bodyFontFamily, lineHeight: 1.45, fontSize: "0.75rem" },
+    caption: { fontFamily: bodyFontFamily, lineHeight: 1.45, fontSize: "0.75rem", fontWeight: 400 },
   };
 }
 
@@ -187,9 +187,9 @@ export function buildSaasComponents({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 999,
+          borderRadius: 12,
           textTransform: "none",
-          fontWeight: 800,
+          fontWeight: 500,
           paddingInline: 16,
           paddingBlock: 8,
           boxShadow: "none",
@@ -199,9 +199,9 @@ export function buildSaasComponents({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 999,
+          borderRadius: 12,
           fontFamily: headingFontFamily,
-          fontWeight: 700,
+          fontWeight: 500,
         },
       },
     },
@@ -250,7 +250,7 @@ export function buildSaasComponents({
           minHeight: 48,
           textTransform: "none",
           fontFamily: headingFontFamily,
-          fontWeight: 700,
+          fontWeight: 500,
           paddingInline: 18,
         },
       },
@@ -276,8 +276,8 @@ export function buildSaasComponents({
         },
         head: {
           fontFamily: headingFontFamily,
-          fontWeight: 800,
-          fontSize: "0.82rem",
+          fontWeight: 600,
+          fontSize: "0.75rem",
         },
       },
     },

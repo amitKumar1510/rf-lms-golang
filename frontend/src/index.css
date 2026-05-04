@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Raleway:wght@400;500;600;700;800&display=swap");
 
 @layer base {
   html {
@@ -12,7 +11,7 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    font-family: "Raleway", "Segoe UI", sans-serif;
+    font-family: "Inter", "Segoe UI", sans-serif;
     background:
       radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
       radial-gradient(circle at top right, rgba(14, 165, 233, 0.1), transparent 26%),
@@ -32,8 +31,8 @@
   h4,
   h5,
   h6 {
-    font-family: "Montserrat", "Segoe UI", sans-serif;
-    letter-spacing: -0.04em;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    letter-spacing: -0.02em;
   }
 
   button,

@@ -131,7 +131,7 @@ export default function NotificationsBell({ role }) {
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ gap: 1, flexWrap: "wrap" }}>
-            <Typography fontWeight={900}>Notifications</Typography>
+            <Typography fontWeight={600}>Notifications</Typography>
             <Stack direction="row" spacing={1}>
               <Button size="small" startIcon={<MarkEmailReadRoundedIcon />} onClick={onMarkAllRead} disabled={!items?.some((x) => x && !x.is_read)}>
                 Mark all read
@@ -167,7 +167,7 @@ export default function NotificationsBell({ role }) {
                     <ListItemText
                       primary={
                         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ gap: 1 }}>
-                          <Typography fontWeight={900}>{n?.title || "Notification"}</Typography>
+                          <Typography fontWeight={600}>{n?.title || "Notification"}</Typography>
                           <Typography variant="caption" sx={{ opacity: 0.7 }}>
                             {n?.created_at ? new Date(n.created_at).toLocaleString() : ""}
                           </Typography>
@@ -220,5 +220,6 @@ export default function NotificationsBell({ role }) {
     </>
   );
 }
+
 
 

@@ -172,14 +172,14 @@ export default function ChatTab({ classId, classSubjects }) {
           <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
             <CardContent>
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-                <Typography fontWeight={900}>Chats</Typography>
+                <Typography fontWeight={600}>Chats</Typography>
                 <Button variant="outlined" size="small" startIcon={<RefreshRoundedIcon />} onClick={loadConversations} disabled={loading}>
                   Refresh
                 </Button>
               </Stack>
               <Divider sx={{ mb: 2 }} />
 
-            <Typography fontWeight={800} sx={{ mb: 1 }}>
+            <Typography fontWeight={500} sx={{ mb: 1 }}>
               Start new chat
             </Typography>
             <Stack spacing={1.5}>
@@ -218,7 +218,7 @@ export default function ChatTab({ classId, classSubjects }) {
                 {conversations.map((c) => (
                   <ListItemButton key={c.id} selected={selectedConv?.id === c.id} onClick={() => setSelectedConv(c)} sx={{ borderRadius: 1 }}>
                     <ListItemText
-                      primary={<Typography fontWeight={800}>{c.teacher?.name || c.teacher?.email || "Teacher"}</Typography>}
+                      primary={<Typography fontWeight={500}>{c.teacher?.name || c.teacher?.email || "Teacher"}</Typography>}
                       secondary={<Typography variant="caption">{c.teacher?.email || ""}</Typography>}
                     />
                     {c.last_message_at ? <Chip size="small" label={new Date(c.last_message_at).toLocaleDateString()} variant="outlined" /> : null}
@@ -233,7 +233,7 @@ export default function ChatTab({ classId, classSubjects }) {
         <Grid item xs={12} md={8}>
           <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
             <CardContent>
-              <Typography fontWeight={900}>Conversation</Typography>
+              <Typography fontWeight={600}>Conversation</Typography>
               <Typography variant="body2" sx={{ opacity: 0.7, mt: 0.5 }}>
                 {selectedConv ? `Teacher: ${selectedConv.teacher?.name || selectedConv.teacher?.email || "-"}` : "Select a chat"}
               </Typography>
@@ -337,5 +337,6 @@ export default function ChatTab({ classId, classSubjects }) {
     </>
   );
 }
+
 
 

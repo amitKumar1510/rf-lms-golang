@@ -35,7 +35,7 @@ export default function SubadminsManageTable({ subadmins, onToggleActive, onDele
             subadmins.map((u) => (
               <TableRow key={u.user_id} hover>
                 <TableCell>
-                  <Typography fontWeight={700}>{u.name}</Typography>
+                  <Typography fontWeight={500}>{u.name}</Typography>
                 </TableCell>
                 <TableCell>{u.email}</TableCell>
                 <TableCell>{u.phone || "-"}</TableCell>
@@ -143,5 +143,6 @@ export default function SubadminsManageTable({ subadmins, onToggleActive, onDele
     </>
   );
 }
+
 
 

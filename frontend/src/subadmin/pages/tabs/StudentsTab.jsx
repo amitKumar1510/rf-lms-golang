@@ -335,7 +335,7 @@ export default function StudentsTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Students</Typography>
+          <Typography fontWeight={600}>Students</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -428,7 +428,7 @@ export default function StudentsTab() {
                   return (
                     <TableRow key={studentId} hover>
                       <TableCell>
-                        <Typography fontWeight={800}>{u?.name || "-"}</Typography>
+                        <Typography fontWeight={500}>{u?.name || "-"}</Typography>
                         <Typography variant="caption" sx={{ opacity: 0.7 }}>
                           {u?.email || ""}
                         </Typography>
@@ -586,7 +586,7 @@ export default function StudentsTab() {
               </FormControl>
 
               <Divider />
-              <Typography fontWeight={900}>Parent (optional)</Typography>
+              <Typography fontWeight={600}>Parent (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Parent name" value={form.parent_name} onChange={change("parent_name")} fullWidth />
                 <TextField label="Parent phone" value={form.parent_phone} onChange={change("parent_phone")} fullWidth />
@@ -600,7 +600,7 @@ export default function StudentsTab() {
               <TextField label="Marital status" value={form.parent_marital_status} onChange={change("parent_marital_status")} fullWidth />
 
               <Divider />
-              <Typography fontWeight={900}>Address (optional)</Typography>
+              <Typography fontWeight={600}>Address (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Street" value={form.street} onChange={change("street")} fullWidth />
                 <TextField label="City" value={form.city} onChange={change("city")} fullWidth />
@@ -673,7 +673,7 @@ export default function StudentsTab() {
               </FormControl>
 
               <Divider />
-              <Typography fontWeight={900}>Parent (optional)</Typography>
+              <Typography fontWeight={600}>Parent (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Parent name" value={form.parent_name} onChange={change("parent_name")} fullWidth />
                 <TextField label="Parent phone" value={form.parent_phone} onChange={change("parent_phone")} fullWidth />
@@ -687,7 +687,7 @@ export default function StudentsTab() {
               <TextField label="Marital status" value={form.parent_marital_status} onChange={change("parent_marital_status")} fullWidth />
 
               <Divider />
-              <Typography fontWeight={900}>Address (optional)</Typography>
+              <Typography fontWeight={600}>Address (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Street" value={form.street} onChange={change("street")} fullWidth />
                 <TextField label="City" value={form.city} onChange={change("city")} fullWidth />
@@ -717,3 +717,4 @@ export default function StudentsTab() {
     </Card>
   );
 }
+

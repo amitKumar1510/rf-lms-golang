@@ -9,7 +9,7 @@ import { Panel } from "./adminPageUi";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { me, user, schools, subadmins, selectedSchool, currentRole, roleInfo } = useOutletContext();
+  const { me, user, schools, subadmins, currentRole, roleInfo } = useOutletContext();
 
   const metrics = [
     {
@@ -54,68 +54,80 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <Stack spacing={2.5}>
-      <Panel>
-        <CardContent className="relative z-10 p-5 md:p-6">
-          <Stack spacing={2.25}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: "wrap" }}>
-              <Chip icon={<WorkspacePremiumRoundedIcon />} label={roleInfo?.badge || "Administrator"} color="primary" className="!rounded-full !text-[0.72rem]" />
-              <Chip label={`${schools.length} schools`} variant="outlined" className="!rounded-full !text-[0.72rem]" />
-              <Chip label={`${subadmins.length} subadmins`} variant="outlined" className="!rounded-full !text-[0.72rem]" />
-            </Stack>
+    <Box className="mx-auto w-full max-w-7xl">
+      <Stack spacing={2.5}>
+        <Panel>
+          <CardContent className="relative z-10 p-5 md:p-6 lg:p-7">
+            <Grid container spacing={3} alignItems="stretch">
+              <Grid item xs={12} lg={8}>
+                <Stack spacing={2.25} className="h-full justify-between">
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: "wrap" }}>
+                    <Chip icon={<WorkspacePremiumRoundedIcon />} label={roleInfo?.badge || "Administrator"} color="primary" className="!rounded-lg !text-[0.72rem]" />
+                    <Chip label={`${schools.length} schools`} variant="outlined" className="!rounded-lg !text-[0.72rem]" />
+                    <Chip label={`${subadmins.length} subadmins`} variant="outlined" className="!rounded-lg !text-[0.72rem]" />
+                  </Stack>
 
-            <Box>
-              <Typography variant="h4" fontWeight={900} className="mb-2 font-['Montserrat'] text-[1.55rem] leading-tight md:text-[1.85rem]">
-                Welcome back, {me?.name || user?.name || "Admin"}
-              </Typography>
-              <Typography variant="body1" className="max-w-3xl text-sm leading-7 text-slate-400 md:text-[0.95rem]">
-                {roleInfo?.subtitle || "Manage schools, create subadmins, and keep the admin workspace organized."}
-              </Typography>
-            </Box>
+                  <Box>
+                    <Typography
+                      variant="h4"
+                      fontWeight={600}
+                      className="mb-2 max-w-2xl font-inherit text-[1.55rem] leading-tight md:text-[1.9rem] lg:text-[2.2rem]"
+                    >
+                      Welcome back, {me?.name || user?.name || "Admin"}
+                    </Typography>
+                    <Typography variant="body1" className="max-w-2xl text-sm leading-7 text-slate-400 md:text-[0.95rem]">
+                      {roleInfo?.subtitle || "Manage schools, create subadmins, and keep the admin workspace organized."}
+                    </Typography>
+                  </Box>
 
-            <Stack direction="row" spacing={1.25} className="flex-wrap">
-              <Button
-                variant="contained"
-                onClick={() => navigate("/admin/create-school")}
-                startIcon={<SchoolRoundedIcon />}
-                className="!rounded-xl !px-4 !py-2 !text-sm !shadow-none transition-transform duration-200 hover:scale-[1.01]"
-              >
-                Create School
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/admin/create-subadmins")}
-                startIcon={<GroupsRoundedIcon />}
-                className="!rounded-xl !px-4 !py-2 !text-sm"
-              >
-                Create Subadmins
-              </Button>
-              <Button
-                variant="text"
-                onClick={() => navigate("/admin/profile")}
-                startIcon={<ManageAccountsRoundedIcon />}
-                className="!rounded-xl !px-4 !py-2 !text-sm"
-              >
-                Profile
-              </Button>
-            </Stack>
-          </Stack>
-        </CardContent>
-      </Panel>
+                  <Stack direction="row" spacing={1.25} className="flex-wrap">
+                    <Button
+                      variant="contained"
+                      onClick={() => navigate("/admin/create-school")}
+                      startIcon={<SchoolRoundedIcon />}
+                      className="!rounded-lg !px-4 !py-2 !text-sm !shadow-none transition-transform duration-200 hover:scale-[1.01]"
+                    >
+                      Create School
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => navigate("/admin/create-subadmins")}
+                      startIcon={<GroupsRoundedIcon />}
+                      className="!rounded-lg !px-4 !py-2 !text-sm"
+                    >
+                      Create Subadmins
+                    </Button>
+                    <Button
+                      variant="text"
+                      onClick={() => navigate("/admin/profile")}
+                      startIcon={<ManageAccountsRoundedIcon />}
+                      className="!rounded-lg !px-4 !py-2 !text-sm"
+                    >
+                      Profile
+                    </Button>
+                  </Stack>
+                </Stack>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Panel>
 
-      <Grid container spacing={2.5}>
-        {metrics.map((metric) => {
-          const Icon = metric.icon;
-          return (
-            <Grid key={metric.label} item xs={12} md={4}>
-              <Panel>
+        <Box className="flex gap-[10px] overflow-x-auto pb-1">
+          {metrics.map((metric) => {
+            const Icon = metric.icon;
+            return (
+              <Panel key={metric.label} sx={{ flex: "1 1 0", minWidth: { xs: 280, sm: 280, md: 0 } }}>
                 <CardContent className="relative z-10 p-5 md:p-6">
-                  <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+                  <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2} className="h-full">
                     <Box>
                       <Typography variant="body2" className="mb-1 text-[0.72rem] uppercase tracking-[0.16em] text-slate-400">
                         {metric.label}
                       </Typography>
-                      <Typography variant="h4" fontWeight={900} className="break-words font-['Montserrat'] text-[1.55rem] leading-tight text-slate-100 md:text-[1.8rem]">
+                      <Typography
+                        variant="h4"
+                        fontWeight={600}
+                        className="break-words font-inherit text-[1.55rem] leading-tight text-slate-100 md:text-[1.8rem]"
+                      >
                         {metric.value}
                       </Typography>
                       <Typography variant="body2" className="mt-1 text-sm text-slate-400">
@@ -123,7 +135,7 @@ export default function AdminDashboard() {
                       </Typography>
                     </Box>
                     <Box
-                      className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/5"
+                      className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-xl border border-white/10 bg-white/5"
                       style={{ color: metric.accent }}
                     >
                       <Icon />
@@ -131,72 +143,30 @@ export default function AdminDashboard() {
                   </Stack>
                 </CardContent>
               </Panel>
-            </Grid>
-          );
-        })}
-      </Grid>
+            );
+          })}
+        </Box>
 
-      <Grid container spacing={2.5}>
-        <Grid item xs={12} md={4}>
-          <Panel sx={{ height: "100%" }}>
-            <CardContent className="relative z-10 p-5 md:p-6">
-              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
-                Dashboard
-              </Typography>
-              <Typography variant="body2" className="text-sm leading-7 text-slate-400">
-                This admin workspace keeps the core school operations in one place. Use it to create schools, assign
-                subadmins, and review your profile without changing the underlying data flow.
-              </Typography>
-            </CardContent>
-          </Panel>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Panel sx={{ height: "100%" }}>
-            <CardContent className="relative z-10 p-5 md:p-6">
-              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
-                Active School
-              </Typography>
-              <Typography variant="body2" className="text-sm leading-7 text-slate-400">
-                {selectedSchool ? selectedSchool.name : "No school selected yet. Choose one from the subadmin page."}
-              </Typography>
-            </CardContent>
-          </Panel>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Panel sx={{ height: "100%" }}>
-            <CardContent className="relative z-10 p-5 md:p-6">
-              <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
-                Quick Paths
-              </Typography>
-              <Typography variant="body2" className="text-sm leading-7 text-slate-400">
-                The sidebar now groups the admin tasks into separate pages, so the dashboard stays brief and focused.
-              </Typography>
-            </CardContent>
-          </Panel>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={2.5}>
-        {taskCards.map((card) => (
-          <Grid key={card.title} item xs={12} md={4}>
-            <Panel sx={{ height: "100%" }}>
+        <Box className="flex gap-[10px] overflow-x-auto pb-1">
+          {taskCards.map((card) => (
+            <Panel key={card.title} sx={{ flex: "1 1 0", minWidth: { xs: 280, sm: 280, md: 0 } }}>
               <CardContent className="relative z-10 p-5 md:p-6">
-                <Typography fontWeight={900} className="mb-1 font-['Montserrat'] text-[1rem] text-slate-100">
-                  {card.title}
-                </Typography>
-                <Typography variant="body2" className="mb-4 text-sm leading-7 text-slate-400">
-                  {card.text}
-                </Typography>
-                <Button variant="outlined" onClick={card.action} className="!rounded-xl !px-4 !py-2 !text-sm">
-                  Open
-                </Button>
+                <Stack spacing={2.25} className="h-full">
+                  <Typography fontWeight={600} className="font-inherit text-[1rem] text-slate-100">
+                    {card.title}
+                  </Typography>
+                  <Typography variant="body2" className="text-sm leading-7 text-slate-400">
+                    {card.text}
+                  </Typography>
+                  <Button variant="outlined" onClick={card.action} className="!rounded-lg !px-4 !py-2 !text-sm">
+                    Open
+                  </Button>
+                </Stack>
               </CardContent>
             </Panel>
-          </Grid>
-        ))}
-      </Grid>
-    </Stack>
+          ))}
+        </Box>
+      </Stack>
+    </Box>
   );
 }

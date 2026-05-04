@@ -52,7 +52,7 @@ export default function PrincipleDashboard() {
           <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
             <DashboardRoundedIcon color="primary" />
             <Box>
-              <Typography fontWeight={900}>{title}</Typography>
+              <Typography fontWeight={600}>{title}</Typography>
               <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.3, flexWrap: "wrap" }}>
                 <Chip size="small" label={`Role: ${user?.role || "principle"}`} />
                 <Chip size="small" label={`School: ${user?.school_id || "-"}`} variant="outlined" />
@@ -67,7 +67,7 @@ export default function PrincipleDashboard() {
                 {(user?.name || "P").slice(0, 1).toUpperCase()}
               </Avatar>
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                <Typography fontWeight={700} variant="body2">
+                <Typography fontWeight={500} variant="body2">
                   {user?.name || "Principle"}
                 </Typography>
                 <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -100,5 +100,7 @@ export default function PrincipleDashboard() {
     </Box>
   );
 }
+
+
 
 

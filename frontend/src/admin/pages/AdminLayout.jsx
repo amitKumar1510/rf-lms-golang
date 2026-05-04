@@ -108,7 +108,7 @@ function SidebarItem({ item, active, onClick }) {
       selected={active}
       onClick={onClick}
       className={[
-        "group mb-1 rounded-2xl border px-4 py-3 transition-all duration-200",
+        "group mb-1 rounded-xl border px-4 py-3 transition-all duration-200",
         active
           ? "border-sky-500/20 bg-sky-500/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
           : "border-transparent hover:border-white/10 hover:bg-white/5",
@@ -119,7 +119,7 @@ function SidebarItem({ item, active, onClick }) {
       </ListItemIcon>
       <ListItemText
         primary={
-          <Typography fontWeight={800} className="font-['Montserrat'] text-[0.9rem] text-slate-100">
+          <Typography fontWeight={500} className="font-inherit text-[0.9rem] text-slate-100">
             {item.label}
           </Typography>
         }
@@ -194,6 +194,7 @@ export default function AdminLayout() {
   }, []);
 
   const loadSubadmins = useCallback(async (schoolId) => {
+    setSubadmins([]);
     if (!schoolId) return;
     setSubLoading(true);
     setSubErr(null);
@@ -312,7 +313,7 @@ export default function AdminLayout() {
             <SchoolRoundedIcon />
           </Avatar>
           <Box sx={{ minWidth: 0 }}>
-            <Typography fontWeight={900} className="font-['Montserrat'] text-[1rem] leading-tight text-slate-100">
+            <Typography fontWeight={600} className="font-inherit text-[1rem] leading-tight text-slate-100">
               RF LMS
             </Typography>
             <Typography variant="caption" className="text-[0.72rem] text-slate-400">
@@ -342,11 +343,11 @@ export default function AdminLayout() {
       </Box>
 
       <Box className="border-t border-white/10 p-4">
-        <Box className="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <Box className="rounded-xl border border-white/10 bg-white/5 p-4">
           <Typography variant="caption" className="mb-1 block text-[0.7rem] text-slate-400">
             Logged in as
           </Typography>
-          <Typography fontWeight={800} className="mt-0.5 font-['Montserrat'] text-[0.95rem] text-slate-100">
+          <Typography fontWeight={500} className="mt-0.5 font-inherit text-[0.95rem] text-slate-100">
             {me?.name || user?.name || "Admin"}
           </Typography>
           <Typography variant="caption" className="text-[0.72rem] text-slate-400">
@@ -390,16 +391,16 @@ export default function AdminLayout() {
           position="fixed"
           color="transparent"
           elevation={0}
-          className="!left-0 !top-0 !z-[1200] !w-full border-b border-white/10 bg-[#07101f]/80 backdrop-blur-xl md:!left-[272px] md:!w-[calc(100%-272px)]"
+          className="!left-0 !top-0 !z-[1200] !w-full !rounded-none border-b border-white/10 bg-[#07101f]/80 backdrop-blur-xl md:!left-[272px] md:!w-[calc(100%-272px)]"
         >
-          <Toolbar className="!min-h-[74px] gap-4 px-4 py-3 sm:px-5 md:!min-h-[84px] md:px-7">
+          <Toolbar className="!min-h-[74px] !rounded-none gap-4 px-4 py-3 sm:px-5 md:!min-h-[84px] md:px-7">
             <IconButton onClick={() => setMobileOpen(true)} className="md:!hidden" color="inherit">
               <MenuRoundedIcon />
             </IconButton>
 
             <Box className="min-w-0 flex-1">
               <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: "wrap" }}>
-                <Typography variant="h6" fontWeight={900} className="font-['Montserrat'] text-[1.02rem] leading-tight md:text-[1.08rem]">
+                <Typography variant="h6" fontWeight={600} className="font-inherit text-[1.02rem] leading-tight md:text-[1.08rem]">
                   {roleInfo.title}
                 </Typography>
                 <Chip size="small" icon={<WorkspacePremiumRoundedIcon />} label={roleInfo.badge} color="primary" />
@@ -442,7 +443,7 @@ export default function AdminLayout() {
                 {(me?.name || user?.name || "A").slice(0, 1).toUpperCase()}
               </Avatar>
               <Box className="hidden sm:block">
-                <Typography fontWeight={800} variant="body2" className="font-['Montserrat'] text-[0.9rem] leading-tight">
+                <Typography fontWeight={500} variant="body2" className="font-inherit text-[0.9rem] leading-tight">
                   {me?.name || user?.name || "Admin"}
                 </Typography>
                 <Typography variant="caption" className="text-[0.72rem] text-slate-400">
@@ -451,17 +452,17 @@ export default function AdminLayout() {
               </Box>
             </Stack>
 
-            <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />} className="!rounded-xl !px-4 !py-2 !text-sm !shadow-none transition-transform duration-200 hover:scale-[1.01]">
+            <Button onClick={onLogout} variant="contained" color="error" startIcon={<LogoutRoundedIcon />} className="!rounded-lg !px-4 !py-2 !text-sm !shadow-none transition-transform duration-200 hover:scale-[1.01]">
               Logout
             </Button>
           </Toolbar>
         </AppBar>
 
-        <Box className="px-4 pb-6 pt-[74px] sm:px-5 md:px-7 md:pt-[84px]">
+        <Box className="px-4 pb-6 pt-[92px] sm:px-5 md:px-7 md:pt-[102px]">
           {err ? (
             <Alert
               severity="error"
-              className="mb-6 rounded-2xl border border-red-400/20 bg-red-950/40"
+              className="mb-6 rounded-xl border border-red-400/20 bg-red-950/40"
             >
               {String(err)}
             </Alert>

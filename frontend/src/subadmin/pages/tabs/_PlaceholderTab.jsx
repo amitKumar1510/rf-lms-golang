@@ -4,7 +4,7 @@ export default function PlaceholderTab({ title, subtitle = "We will integrate ro
   return (
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
-        <Typography fontWeight={900} sx={{ mb: 1 }}>
+        <Typography fontWeight={600} sx={{ mb: 1 }}>
           {title}
         </Typography>
         <Divider sx={{ mb: 2 }} />
@@ -13,5 +13,6 @@ export default function PlaceholderTab({ title, subtitle = "We will integrate ro
     </Card>
   );
 }
+
 
 

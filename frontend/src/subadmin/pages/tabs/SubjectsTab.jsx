@@ -271,7 +271,7 @@ export default function SubjectsTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Subjects</Typography>
+          <Typography fontWeight={600}>Subjects</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -312,7 +312,7 @@ export default function SubjectsTab() {
                 items.map((s) => (
                   <TableRow key={s.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{s.name}</Typography>
+                      <Typography fontWeight={500}>{s.name}</Typography>
                     </TableCell>
                     <TableCell>{s.code}</TableCell>
                     <TableCell sx={{ maxWidth: 420 }}>
@@ -468,7 +468,7 @@ export default function SubjectsTab() {
         >
           <DialogTitle>
             Manage Content —{" "}
-            <Typography component="span" fontWeight={900}>
+            <Typography component="span" fontWeight={600}>
               {activeSubject?.name || "-"}
             </Typography>
           </DialogTitle>
@@ -481,7 +481,7 @@ export default function SubjectsTab() {
               <Card elevation={0} variant="outlined" sx={{ flex: 1, borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                    <Typography fontWeight={900}>Modules</Typography>
+                    <Typography fontWeight={600}>Modules</Typography>
                     <Stack direction="row" spacing={1}>
                       <Button size="small" variant="contained" onClick={() => { setEditTarget({ type: "module", row: null }); setModuleForm({ name: "", description: "", order_index: 0 }); setOpenModuleDialog(true); }}>
                         Add
@@ -503,7 +503,7 @@ export default function SubjectsTab() {
                         modules.map((m) => (
                           <TableRow key={m.id} hover selected={selModule?.id === m.id} onClick={() => loadSubmodules(m)} sx={{ cursor: "pointer" }}>
                             <TableCell>
-                              <Typography fontWeight={800}>{m.name}</Typography>
+                              <Typography fontWeight={500}>{m.name}</Typography>
                             </TableCell>
                             <TableCell>{m.is_active ? <Chip size="small" color="success" label="Active" /> : <Chip size="small" label="Inactive" />}</TableCell>
                             <TableCell align="right" onClick={(e) => e.stopPropagation()}>
@@ -582,7 +582,7 @@ export default function SubjectsTab() {
               <Card elevation={0} variant="outlined" sx={{ flex: 1, borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                    <Typography fontWeight={900}>Submodules</Typography>
+                    <Typography fontWeight={600}>Submodules</Typography>
                     <Stack direction="row" spacing={1}>
                       <Button
                         size="small"
@@ -618,7 +618,7 @@ export default function SubjectsTab() {
                         submodules.map((sm) => (
                           <TableRow key={sm.id} hover selected={selSubmodule?.id === sm.id} onClick={() => loadContents(sm)} sx={{ cursor: "pointer" }}>
                             <TableCell>
-                              <Typography fontWeight={800}>{sm.name}</Typography>
+                              <Typography fontWeight={500}>{sm.name}</Typography>
                             </TableCell>
                             <TableCell>{sm.is_active ? <Chip size="small" color="success" label="Active" /> : <Chip size="small" label="Inactive" />}</TableCell>
                             <TableCell align="right" onClick={(e) => e.stopPropagation()}>
@@ -695,7 +695,7 @@ export default function SubjectsTab() {
               <Card elevation={0} variant="outlined" sx={{ flex: 1.2, borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                    <Typography fontWeight={900}>Content</Typography>
+                    <Typography fontWeight={600}>Content</Typography>
                     <Stack direction="row" spacing={1}>
                       <Button
                         size="small"
@@ -733,7 +733,7 @@ export default function SubjectsTab() {
                         contents.map((c) => (
                           <TableRow key={c.id} hover>
                             <TableCell>
-                              <Typography fontWeight={800}>{c.title}</Typography>
+                              <Typography fontWeight={500}>{c.title}</Typography>
                             </TableCell>
                             <TableCell>{c.content_type}</TableCell>
                             <TableCell>
@@ -994,4 +994,5 @@ export default function SubjectsTab() {
     </Card>
   );
 }
+
 

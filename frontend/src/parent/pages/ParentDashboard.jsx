@@ -192,7 +192,7 @@ export default function ParentDashboard() {
           <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
             <DashboardRoundedIcon color="primary" />
             <Box>
-              <Typography fontWeight={900}>{title}</Typography>
+              <Typography fontWeight={600}>{title}</Typography>
               <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.3, flexWrap: "wrap" }}>
                 <Chip size="small" label={`Role: ${user?.role || "parent"}`} />
                 <Chip size="small" label={`School: ${user?.school_id || "-"}`} variant="outlined" />
@@ -206,7 +206,7 @@ export default function ParentDashboard() {
                 {(user?.name || "P").slice(0, 1).toUpperCase()}
               </Avatar>
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                <Typography fontWeight={700} variant="body2">
+                <Typography fontWeight={500} variant="body2">
                   {user?.name || "Parent"}
                 </Typography>
                 <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -245,10 +245,10 @@ export default function ParentDashboard() {
             <Grid item xs={12} md={6}>
               <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
-                  <Typography fontWeight={900}>Parent Details</Typography>
+                  <Typography fontWeight={600}>Parent Details</Typography>
                   <Divider sx={{ my: 2 }} />
                   <Stack spacing={0.5}>
-                    <Typography fontWeight={800}>{parent?.name || "-"}</Typography>
+                    <Typography fontWeight={500}>{parent?.name || "-"}</Typography>
                     <Typography variant="body2" sx={{ opacity: 0.8 }}>
                       {parent?.email || "-"}
                     </Typography>
@@ -274,11 +274,11 @@ export default function ParentDashboard() {
             <Grid item xs={12} md={6}>
               <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
-                  <Typography fontWeight={900}>Linked Child</Typography>
+                  <Typography fontWeight={600}>Linked Child</Typography>
                   <Divider sx={{ my: 2 }} />
                   {childStudent ? (
                     <Stack spacing={0.5}>
-                      <Typography fontWeight={800}>{childUser?.name || "-"}</Typography>
+                      <Typography fontWeight={500}>{childUser?.name || "-"}</Typography>
                       <Typography variant="body2" sx={{ opacity: 0.8 }}>
                         {childUser?.email || "-"}
                       </Typography>
@@ -303,11 +303,11 @@ export default function ParentDashboard() {
             <Grid item xs={12} md={6}>
               <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
-                  <Typography fontWeight={900}>Child Details</Typography>
+                  <Typography fontWeight={600}>Child Details</Typography>
                   <Divider sx={{ my: 2 }} />
                   {childStudent ? (
                     <Stack spacing={0.5}>
-                      <Typography fontWeight={800}>{childUser?.name || "-"}</Typography>
+                      <Typography fontWeight={500}>{childUser?.name || "-"}</Typography>
                       <Typography variant="body2" sx={{ opacity: 0.8 }}>
                         Email: {childUser?.email || "-"}
                       </Typography>
@@ -333,10 +333,10 @@ export default function ParentDashboard() {
             <Grid item xs={12} md={6}>
               <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                 <CardContent>
-                  <Typography fontWeight={900}>Parent Record (from Student)</Typography>
+                  <Typography fontWeight={600}>Parent Record (from Student)</Typography>
                   <Divider sx={{ my: 2 }} />
                   <Stack spacing={0.5}>
-                    <Typography fontWeight={800}>{childParent?.name || "-"}</Typography>
+                    <Typography fontWeight={500}>{childParent?.name || "-"}</Typography>
                     <Typography variant="body2" sx={{ opacity: 0.8 }}>
                       {childParent?.email || "-"}
                     </Typography>
@@ -357,7 +357,7 @@ export default function ParentDashboard() {
           <Stack spacing={2}>
             <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
               <CardContent>
-                <Typography fontWeight={900}>Child Subjects & Content</Typography>
+                <Typography fontWeight={600}>Child Subjects & Content</Typography>
                 <Divider sx={{ my: 2 }} />
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                   <TextField
@@ -403,7 +403,7 @@ export default function ParentDashboard() {
 
             <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
               <CardContent>
-                <Typography fontWeight={900}>Content</Typography>
+                <Typography fontWeight={600}>Content</Typography>
                 <Typography variant="body2" sx={{ opacity: 0.7, mt: 0.5 }}>
                   Full page content for the selected module
                 </Typography>
@@ -420,7 +420,7 @@ export default function ParentDashboard() {
                       return (
                         <Card key={sm.id} elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                           <CardContent>
-                            <Typography fontWeight={900}>{sm.name || "Submodule"}</Typography>
+                            <Typography fontWeight={600}>{sm.name || "Submodule"}</Typography>
                             {sm.description ? (
                               <Typography variant="body2" sx={{ opacity: 0.7, mt: 0.5 }}>
                                 {sm.description}
@@ -434,7 +434,7 @@ export default function ParentDashboard() {
                                 {cs.map((c) => (
                                   <Card key={c.id} elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                                     <CardContent>
-                                      <Typography fontWeight={900}>{c.title || c.id}</Typography>
+                                      <Typography fontWeight={600}>{c.title || c.id}</Typography>
                                       {c.content_data ? (
                                         <Typography sx={{ whiteSpace: "pre-wrap", mt: 1 }}>{c.content_data}</Typography>
                                       ) : (
@@ -479,7 +479,7 @@ export default function ParentDashboard() {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Submissions
                     </Typography>
-                    <Typography fontWeight={900}>{subs?.length || 0}</Typography>
+                    <Typography fontWeight={600}>{subs?.length || 0}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -489,7 +489,7 @@ export default function ParentDashboard() {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Graded
                     </Typography>
-                    <Typography fontWeight={900}>{graded?.length || 0}</Typography>
+                    <Typography fontWeight={600}>{graded?.length || 0}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -499,7 +499,7 @@ export default function ParentDashboard() {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Average %
                     </Typography>
-                    <Typography fontWeight={900}>{avg == null ? "-" : `${avg.toFixed(1)}%`}</Typography>
+                    <Typography fontWeight={600}>{avg == null ? "-" : `${avg.toFixed(1)}%`}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -507,7 +507,7 @@ export default function ParentDashboard() {
 
             <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
               <CardContent>
-                <Typography fontWeight={900}>Marks</Typography>
+                <Typography fontWeight={600}>Marks</Typography>
                 <Divider sx={{ my: 2 }} />
                 {!graded.length ? (
                   <Typography sx={{ opacity: 0.7 }}>No graded marks yet.</Typography>
@@ -516,7 +516,7 @@ export default function ParentDashboard() {
                     {graded.map((s) => (
                       <Card key={s.id} elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                         <CardContent>
-                          <Typography fontWeight={900}>{s.assignment_title || s.assignment_id}</Typography>
+                          <Typography fontWeight={600}>{s.assignment_title || s.assignment_id}</Typography>
                           <Typography variant="body2" sx={{ opacity: 0.8 }}>
                             {s.marks_obtained}/{s.total_marks} ({typeof s.percentage === "number" ? `${s.percentage.toFixed(1)}%` : "-"})
                           </Typography>
@@ -545,5 +545,7 @@ export default function ParentDashboard() {
     </Box>
   );
 }
+
+
 
 

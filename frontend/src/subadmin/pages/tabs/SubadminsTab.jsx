@@ -64,7 +64,7 @@ export default function SubadminsTab({ schoolId }) {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-          <Typography fontWeight={900}>Subadmins (School)</Typography>
+          <Typography fontWeight={600}>Subadmins (School)</Typography>
           <Stack direction="row" spacing={1}>
             <Button onClick={() => setOpenCreate(true)} variant="contained" startIcon={<AddRoundedIcon />} disabled={!schoolId}>
               Create
@@ -96,5 +96,6 @@ export default function SubadminsTab({ schoolId }) {
     </Card>
   );
 }
+
 
 

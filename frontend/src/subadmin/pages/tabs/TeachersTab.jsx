@@ -294,7 +294,7 @@ export default function TeachersTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Teachers</Typography>
+          <Typography fontWeight={600}>Teachers</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -409,7 +409,7 @@ export default function TeachersTab() {
                 items.map((t) => (
                   <TableRow key={t.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{t.name}</Typography>
+                      <Typography fontWeight={500}>{t.name}</Typography>
                       <Typography variant="caption" sx={{ opacity: 0.7 }}>
                         {t.id}
                       </Typography>
@@ -525,7 +525,7 @@ export default function TeachersTab() {
               <TextField label="Specialization" value={form.specialization} onChange={change("specialization")} fullWidth />
 
               <Divider />
-              <Typography fontWeight={900}>Subjects</Typography>
+              <Typography fontWeight={600}>Subjects</Typography>
               <Autocomplete
                 multiple
                 options={subjects || []}
@@ -546,7 +546,7 @@ export default function TeachersTab() {
               />
 
               <Divider />
-              <Typography fontWeight={900}>Departments</Typography>
+              <Typography fontWeight={600}>Departments</Typography>
               <Autocomplete
                 multiple
                 options={departments || []}
@@ -567,7 +567,7 @@ export default function TeachersTab() {
               />
 
               <Divider />
-              <Typography fontWeight={900}>Address (optional)</Typography>
+              <Typography fontWeight={600}>Address (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Street" value={form.street} onChange={change("street")} fullWidth />
                 <TextField label="City" value={form.city} onChange={change("city")} fullWidth />
@@ -613,7 +613,7 @@ export default function TeachersTab() {
 
               <Divider />
               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography fontWeight={900}>Subjects</Typography>
+                <Typography fontWeight={600}>Subjects</Typography>
                 <FormControlLabel control={<Switch checked={updateSubjects} onChange={(e) => setUpdateSubjects(e.target.checked)} />} label="Update subjects" />
               </Stack>
               <Autocomplete
@@ -639,7 +639,7 @@ export default function TeachersTab() {
 
               <Divider />
               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography fontWeight={900}>Departments</Typography>
+                <Typography fontWeight={600}>Departments</Typography>
                 <FormControlLabel
                   control={<Switch checked={updateDepartments} onChange={(e) => setUpdateDepartments(e.target.checked)} />}
                   label="Update departments"
@@ -667,7 +667,7 @@ export default function TeachersTab() {
               /> */}
 
               <Divider />
-              <Typography fontWeight={900}>Address (optional)</Typography>
+              <Typography fontWeight={600}>Address (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Street" value={form.street} onChange={change("street")} fullWidth />
                 <TextField label="City" value={form.city} onChange={change("city")} fullWidth />
@@ -703,3 +703,4 @@ export default function TeachersTab() {
     </Card>
   );
 }
+

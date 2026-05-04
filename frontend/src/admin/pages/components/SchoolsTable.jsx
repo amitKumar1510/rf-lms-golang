@@ -1,5 +1,4 @@
 import {
-  Box,
   Chip,
   IconButton,
   Paper,
@@ -13,31 +12,13 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 
 export default function SchoolsTable({ schools, selectedSchoolId, onSelect }) {
   return (
     <Paper
       variant="outlined"
-      className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-[0_18px_50px_rgba(2,6,23,0.28)] backdrop-blur-xl"
+      className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_18px_50px_rgba(2,6,23,0.28)] backdrop-blur-xl"
     >
-      <Box className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-[linear-gradient(135deg,rgba(37,99,235,0.10),rgba(14,165,233,0.04))] p-5">
-        <Stack direction="row" spacing={1.25} alignItems="center">
-          <Box className="grid h-10 w-10 place-items-center rounded-xl bg-white/5 text-sky-400">
-            <SchoolRoundedIcon fontSize="small" />
-          </Box>
-          <Box>
-            <Typography fontWeight={900} className="font-['Montserrat'] text-[0.95rem] text-slate-100">
-              Schools
-            </Typography>
-            <Typography variant="caption" className="text-[0.72rem] text-slate-400">
-              Select a campus to update the subadmin list
-            </Typography>
-          </Box>
-        </Stack>
-        <Chip size="small" label={`${schools?.length || 0} total`} className="!rounded-full !text-[0.72rem]" />
-      </Box>
-
       <Table size="small" className="[&_.MuiTableCell-root]:border-b-white/10">
         <TableHead>
           <TableRow>
@@ -68,10 +49,10 @@ export default function SchoolsTable({ schools, selectedSchoolId, onSelect }) {
                 >
                   <TableCell className="px-4 py-3">
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <Typography fontWeight={800} className="font-['Montserrat'] text-[0.9rem] text-slate-100">
+                      <Typography fontWeight={500} className="font-inherit text-[0.9rem] text-slate-100">
                         {s.name}
                       </Typography>
-                      {active ? <Chip size="small" label="Selected" color="primary" className="!rounded-full !text-[0.68rem]" /> : null}
+                      {active ? <Chip size="small" label="Selected" color="primary" className="!rounded-lg !text-[0.68rem]" /> : null}
                     </Stack>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-slate-300">{s.email || "-"}</TableCell>

@@ -49,7 +49,7 @@ export default function ThemeSettingsButton({ iconOnly = true }) {
                 sx={{ borderRadius: 1 }}
               >
                 <Radio checked={p.id === themeId} />
-                <ListItemText primary={<Typography fontWeight={800}>{p.name}</Typography>} secondary={p.id} />
+                <ListItemText primary={<Typography fontWeight={500}>{p.name}</Typography>} secondary={p.id} />
               </ListItemButton>
             ))}
           </List>
@@ -68,5 +68,6 @@ export default function ThemeSettingsButton({ iconOnly = true }) {
     </>
   );
 }
+
 
 

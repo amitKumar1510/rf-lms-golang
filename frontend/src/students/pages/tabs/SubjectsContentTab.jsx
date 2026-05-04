@@ -72,7 +72,7 @@ export default function SubjectsContentTab({ classSubjects }) {
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
           <Stack spacing={0.25}>
-            <Typography fontWeight={900}>Subjects</Typography>
+            <Typography fontWeight={600}>Subjects</Typography>
             <Typography variant="body2" sx={{ opacity: 0.7 }}>
               Tap a subject card to open its content page.
             </Typography>
@@ -116,7 +116,7 @@ export default function SubjectsContentTab({ classSubjects }) {
                       <Stack spacing={1}>
                         <Stack direction="row" spacing={1} alignItems="center">
                           <MenuBookRoundedIcon color="primary" />
-                          <Typography fontWeight={900}>
+                          <Typography fontWeight={600}>
                             {subj?.name || cs.subject_id}
                             {subj?.code ? ` (${subj.code})` : ""}
                           </Typography>
@@ -132,7 +132,7 @@ export default function SubjectsContentTab({ classSubjects }) {
                         <Stack spacing={0.5}>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <PersonRoundedIcon fontSize="small" />
-                            <Typography fontWeight={800}>{teacherName}</Typography>
+                            <Typography fontWeight={500}>{teacherName}</Typography>
                           </Stack>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <EmailRoundedIcon fontSize="small" />
@@ -157,5 +157,6 @@ export default function SubjectsContentTab({ classSubjects }) {
     </Card>
   );
 }
+
 
 

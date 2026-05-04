@@ -170,7 +170,7 @@ export default function SessionsTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Academic Sessions</Typography>
+          <Typography fontWeight={600}>Academic Sessions</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -211,7 +211,7 @@ export default function SessionsTab() {
                 items.map((s) => (
                   <TableRow key={s.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{s.name}</Typography>
+                      <Typography fontWeight={500}>{s.name}</Typography>
                     </TableCell>
                     <TableCell>{s.start_date ? new Date(s.start_date).toLocaleDateString() : "-"}</TableCell>
                     <TableCell>{s.end_date ? new Date(s.end_date).toLocaleDateString() : "-"}</TableCell>
@@ -328,4 +328,5 @@ export default function SessionsTab() {
     </Card>
   );
 }
+
 

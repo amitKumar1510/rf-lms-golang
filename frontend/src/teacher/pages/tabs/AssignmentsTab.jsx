@@ -323,7 +323,7 @@ export default function AssignmentsTab({ teacher }) {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-          <Typography fontWeight={900}>Assignments</Typography>
+          <Typography fontWeight={600}>Assignments</Typography>
           <Stack direction="row" spacing={1}>
             <Button variant="contained" startIcon={<AddRoundedIcon />} disabled={!selectedClassSubject?.class_subject_id} onClick={() => setOpenCreate(true)}>
               Create
@@ -368,7 +368,7 @@ export default function AssignmentsTab({ teacher }) {
                 items.map((a) => (
                   <TableRow key={a.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{a.title}</Typography>
+                      <Typography fontWeight={500}>{a.title}</Typography>
                       <Typography variant="caption" sx={{ opacity: 0.7 }}>
                         {a.description || ""}
                       </Typography>
@@ -490,7 +490,7 @@ export default function AssignmentsTab({ teacher }) {
                 <Stack spacing={1.5}>
                   <Divider />
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography fontWeight={900}>MCQ Questions</Typography>
+                    <Typography fontWeight={600}>MCQ Questions</Typography>
                     <Button
                       size="small"
                       variant="outlined"
@@ -575,7 +575,7 @@ export default function AssignmentsTab({ teacher }) {
               {form.assignment_type === "file_upload" ? (
                 <Stack spacing={1.5}>
                   <Divider />
-                  <Typography fontWeight={900}>Question PDF (optional)</Typography>
+                  <Typography fontWeight={600}>Question PDF (optional)</Typography>
                   <Button variant="outlined" component="label">
                     {questionPdf ? `Selected: ${questionPdf.name}` : "Upload question PDF"}
                     <input
@@ -654,7 +654,7 @@ export default function AssignmentsTab({ teacher }) {
                 {editForm.assignment_type === "file_upload" ? (
                   <Stack spacing={1.5}>
                     <Divider />
-                    <Typography fontWeight={900}>Question PDF</Typography>
+                    <Typography fontWeight={600}>Question PDF</Typography>
                     {editFor?.question_file_url ? (
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }}>
                         <Button component="a" href={editFor.question_file_url} target="_blank" rel="noreferrer" variant="outlined">
@@ -693,7 +693,7 @@ export default function AssignmentsTab({ teacher }) {
                   <Stack spacing={1.5}>
                     <Divider />
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Typography fontWeight={900}>Questions</Typography>
+                      <Typography fontWeight={600}>Questions</Typography>
                       <Button
                         size="small"
                         variant="outlined"
@@ -824,7 +824,7 @@ export default function AssignmentsTab({ teacher }) {
                     subs.map((s) => (
                       <TableRow key={s.id} hover>
                         <TableCell>
-                          <Typography fontWeight={800}>{s.student_name || s.student_id}</Typography>
+                          <Typography fontWeight={500}>{s.student_name || s.student_id}</Typography>
                         </TableCell>
                         <TableCell>{s.submitted_at ? new Date(s.submitted_at).toLocaleString() : "-"}</TableCell>
                         <TableCell>{s.submission_type}</TableCell>
@@ -955,5 +955,6 @@ export default function AssignmentsTab({ teacher }) {
     </Card>
   );
 }
+
 
 

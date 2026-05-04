@@ -69,7 +69,7 @@ export default function StudentsTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-          <Typography fontWeight={900}>Students (Class-wise)</Typography>
+          <Typography fontWeight={600}>Students (Class-wise)</Typography>
           <Button
             variant="outlined"
             startIcon={<RefreshRoundedIcon />}
@@ -121,14 +121,14 @@ export default function StudentsTab() {
                   return (
                     <TableRow key={s?.id || Math.random()} hover>
                       <TableCell>
-                        <Typography fontWeight={800}>{u?.name || "-"}</Typography>
+                        <Typography fontWeight={500}>{u?.name || "-"}</Typography>
                         <Typography variant="caption" sx={{ opacity: 0.7 }}>
                           {u?.email || ""}
                         </Typography>
                       </TableCell>
                       <TableCell>{s?.roll_number || "-"}</TableCell>
                       <TableCell>
-                        <Typography fontWeight={700}>{p?.name || "-"}</Typography>
+                        <Typography fontWeight={500}>{p?.name || "-"}</Typography>
                         <Typography variant="caption" sx={{ opacity: 0.7 }}>
                           {p?.relation || ""}
                         </Typography>
@@ -157,5 +157,7 @@ export default function StudentsTab() {
     </Card>
   );
 }
+
+
 
 

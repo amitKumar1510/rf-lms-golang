@@ -135,7 +135,7 @@ export default function AssignmentsTab({ classSubjects }) {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-          <Typography fontWeight={900}>Assignments</Typography>
+          <Typography fontWeight={600}>Assignments</Typography>
           <Button
             variant="outlined"
             startIcon={<RefreshRoundedIcon />}
@@ -186,7 +186,7 @@ export default function AssignmentsTab({ classSubjects }) {
                   return (
                     <TableRow key={a.id} hover>
                       <TableCell>
-                        <Typography fontWeight={800}>{a.title}</Typography>
+                        <Typography fontWeight={500}>{a.title}</Typography>
                         <Typography variant="caption" sx={{ opacity: 0.7 }}>
                           {a.description || ""}
                         </Typography>
@@ -325,7 +325,7 @@ export default function AssignmentsTab({ classSubjects }) {
                     <Card key={q.id} elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                       <CardContent>
                         <Stack spacing={1}>
-                          <Typography fontWeight={900}>
+                          <Typography fontWeight={600}>
                             Q{idx + 1}. {q.question_text}
                           </Typography>
                           <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -393,5 +393,6 @@ export default function AssignmentsTab({ classSubjects }) {
     </Card>
   );
 }
+
 
 

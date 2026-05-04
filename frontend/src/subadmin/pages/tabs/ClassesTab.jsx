@@ -355,7 +355,7 @@ export default function ClassesTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Classes</Typography>
+          <Typography fontWeight={600}>Classes</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -402,7 +402,7 @@ export default function ClassesTab() {
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell>
-                      <Typography fontWeight={800}>{c.name}</Typography>
+                      <Typography fontWeight={500}>{c.name}</Typography>
                     </TableCell>
                     <TableCell>{c.grade_level}</TableCell>
                     <TableCell>{c.section}</TableCell>
@@ -596,7 +596,7 @@ export default function ClassesTab() {
         >
           <DialogTitle>
             Assign Subjects —{" "}
-            <Typography component="span" fontWeight={900}>
+            <Typography component="span" fontWeight={600}>
               {activeClass?.name || "-"}
             </Typography>
           </DialogTitle>
@@ -656,7 +656,7 @@ export default function ClassesTab() {
 
               <Divider />
 
-              <Typography fontWeight={900}>Assigned Subjects</Typography>
+              <Typography fontWeight={600}>Assigned Subjects</Typography>
               {subjectsLoading ? (
                 <Typography sx={{ opacity: 0.7 }}>Loading...</Typography>
               ) : classSubjects?.length ? (
@@ -674,7 +674,7 @@ export default function ClassesTab() {
                     {classSubjects.map((cs) => (
                       <TableRow key={cs.id} hover>
                         <TableCell>
-                          <Typography fontWeight={800}>{cs?.subject?.name || "-"}</Typography>
+                          <Typography fontWeight={500}>{cs?.subject?.name || "-"}</Typography>
                         </TableCell>
                         <TableCell>{cs?.subject?.code || "-"}</TableCell>
                         <TableCell>
@@ -822,7 +822,7 @@ export default function ClassesTab() {
         >
           <DialogTitle>
             Manage Teachers —{" "}
-            <Typography component="span" fontWeight={900}>
+            <Typography component="span" fontWeight={600}>
               {activeClass?.name || "-"} / {activeClassSubject?.subject?.name || "-"}
             </Typography>
           </DialogTitle>
@@ -883,7 +883,7 @@ export default function ClassesTab() {
               </Stack>
 
               <Divider />
-              <Typography fontWeight={900}>Assigned Teachers</Typography>
+              <Typography fontWeight={600}>Assigned Teachers</Typography>
               {teacherAssignments?.length ? (
                 <Table size="small">
                   <TableHead>
@@ -900,7 +900,7 @@ export default function ClassesTab() {
                     {teacherAssignments.map((ta) => (
                       <TableRow key={ta.id} hover>
                         <TableCell>
-                          <Typography fontWeight={800}>{ta?.teacher?.name || "-"}</Typography>
+                          <Typography fontWeight={500}>{ta?.teacher?.name || "-"}</Typography>
                           <Typography variant="caption" sx={{ opacity: 0.7 }}>
                             {ta?.teacher?.email || ""}
                           </Typography>
@@ -935,4 +935,5 @@ export default function ClassesTab() {
     </Card>
   );
 }
+
 

@@ -83,7 +83,7 @@ export default function SettingsTab({ me, onUpdated, onBack }) {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-          <Typography fontWeight={900}>Settings</Typography>
+          <Typography fontWeight={600}>Settings</Typography>
           <Button startIcon={<ArrowBackRoundedIcon />} onClick={onBack} variant="outlined">
             Back
           </Button>
@@ -131,7 +131,7 @@ export default function SettingsTab({ me, onUpdated, onBack }) {
 
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
           <LockRoundedIcon color="primary" />
-          <Typography fontWeight={900}>Change Password</Typography>
+          <Typography fontWeight={600}>Change Password</Typography>
         </Stack>
         {pwdErr ? (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -179,5 +179,6 @@ export default function SettingsTab({ me, onUpdated, onBack }) {
     </Card>
   );
 }
+
 
 

@@ -26,7 +26,7 @@ export default function AssignedClassesTab({ teacher, loading, error }) {
   return (
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
-        <Typography fontWeight={900} sx={{ mb: 1 }}>
+        <Typography fontWeight={600} sx={{ mb: 1 }}>
           Assigned Classes & Subjects
         </Typography>
         <Divider sx={{ mb: 2 }} />
@@ -51,7 +51,7 @@ export default function AssignedClassesTab({ teacher, loading, error }) {
                 rows.map((r) => (
                   <TableRow key={r.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{r.class_name}</Typography>
+                      <Typography fontWeight={500}>{r.class_name}</Typography>
                     </TableCell>
                     <TableCell>{r.subject_name}</TableCell>
                     <TableCell>{r.academic_year}</TableCell>
@@ -74,5 +74,6 @@ export default function AssignedClassesTab({ teacher, loading, error }) {
     </Card>
   );
 }
+
 
 

@@ -130,7 +130,7 @@ export default function SubjectContentPage() {
       <Box sx={{ py: 3, px: { xs: 1.5, sm: 3, md: 4 }, maxWidth: 1100, mx: "auto" }}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} justifyContent="space-between" alignItems={{ xs: "stretch", sm: "center" }}>
           <Stack spacing={0.25}>
-            <Typography fontWeight={900} variant="h6">
+            <Typography fontWeight={600} variant="h6">
               {subjectLabel} — Content
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.7 }}>
@@ -194,7 +194,7 @@ export default function SubjectContentPage() {
                   return (
                     <Card key={sm.id} elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                       <CardContent>
-                        <Typography fontWeight={900} sx={{ mb: 0.5 }}>
+                        <Typography fontWeight={600} sx={{ mb: 0.5 }}>
                           {sm.name || "Submodule"}
                         </Typography>
                         {sm.description ? (
@@ -213,7 +213,7 @@ export default function SubjectContentPage() {
                               <Card key={c.id} elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                                 <CardContent>
                                   <Stack spacing={1}>
-                                    <Typography fontWeight={900}>{c.title || c.id}</Typography>
+                                    <Typography fontWeight={600}>{c.title || c.id}</Typography>
                                     {c.content_data ? (
                                       <Typography sx={{ whiteSpace: "pre-wrap" }}>{c.content_data}</Typography>
                                     ) : (
@@ -247,5 +247,6 @@ export default function SubjectContentPage() {
     </Box>
   );
 }
+
 
 

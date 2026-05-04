@@ -218,7 +218,7 @@ export default function PrinciplesTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Principles</Typography>
+          <Typography fontWeight={600}>Principles</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -260,7 +260,7 @@ export default function PrinciplesTab() {
                 items.map((p) => (
                   <TableRow key={p.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{p.name}</Typography>
+                      <Typography fontWeight={500}>{p.name}</Typography>
                       <Typography variant="caption" sx={{ opacity: 0.7 }}>
                         {p.email}
                       </Typography>
@@ -381,7 +381,7 @@ export default function PrinciplesTab() {
               </Stack>
 
               <Divider />
-              <Typography fontWeight={900}>Address (optional)</Typography>
+              <Typography fontWeight={600}>Address (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Street" value={form.street} onChange={change("street")} fullWidth />
                 <TextField label="City" value={form.city} onChange={change("city")} fullWidth />
@@ -433,7 +433,7 @@ export default function PrinciplesTab() {
               </Stack>
 
               <Divider />
-              <Typography fontWeight={900}>Address (optional)</Typography>
+              <Typography fontWeight={600}>Address (optional)</Typography>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <TextField label="Street" value={form.street} onChange={change("street")} fullWidth />
                 <TextField label="City" value={form.city} onChange={change("city")} fullWidth />
@@ -463,3 +463,4 @@ export default function PrinciplesTab() {
     </Card>
   );
 }
+

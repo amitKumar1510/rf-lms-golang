@@ -150,7 +150,7 @@ export default function AttendanceTab({ student, classSubjects }) {
   return (
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
-        <Typography fontWeight={900} sx={{ mb: 1 }}>
+        <Typography fontWeight={600} sx={{ mb: 1 }}>
           My Attendance
         </Typography>
         <Divider sx={{ mb: 2 }} />
@@ -201,7 +201,7 @@ export default function AttendanceTab({ student, classSubjects }) {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Total Days
                     </Typography>
-                    <Typography fontWeight={900}>{overallStats.total}</Typography>
+                    <Typography fontWeight={600}>{overallStats.total}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -211,7 +211,7 @@ export default function AttendanceTab({ student, classSubjects }) {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Present
                     </Typography>
-                    <Typography fontWeight={900} color="success.main">{overallStats.present}</Typography>
+                    <Typography fontWeight={600} color="success.main">{overallStats.present}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -221,7 +221,7 @@ export default function AttendanceTab({ student, classSubjects }) {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Absent
                     </Typography>
-                    <Typography fontWeight={900} color="error.main">{overallStats.absent}</Typography>
+                    <Typography fontWeight={600} color="error.main">{overallStats.absent}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -231,7 +231,7 @@ export default function AttendanceTab({ student, classSubjects }) {
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       Attendance %
                     </Typography>
-                    <Typography fontWeight={900} color={overallStats.percentage >= 75 ? "success.main" : overallStats.percentage >= 60 ? "warning.main" : "error.main"}>
+                    <Typography fontWeight={600} color={overallStats.percentage >= 75 ? "success.main" : overallStats.percentage >= 60 ? "warning.main" : "error.main"}>
                       {overallStats.percentage}%
                     </Typography>
                   </CardContent>
@@ -301,3 +301,4 @@ export default function AttendanceTab({ student, classSubjects }) {
     </Card>
   );
 }
+

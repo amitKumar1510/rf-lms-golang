@@ -43,7 +43,7 @@ export default function StudentsTab({ teacher }) {
   return (
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
-        <Typography fontWeight={900} sx={{ mb: 1 }}>
+        <Typography fontWeight={600} sx={{ mb: 1 }}>
           Students (Class-wise)
         </Typography>
         <Divider sx={{ mb: 2 }} />
@@ -83,7 +83,7 @@ export default function StudentsTab({ teacher }) {
                   return (
                     <TableRow key={s?.id} hover>
                       <TableCell>
-                        <Typography fontWeight={800}>{u?.name || "-"}</Typography>
+                        <Typography fontWeight={500}>{u?.name || "-"}</Typography>
                         <Typography variant="caption" sx={{ opacity: 0.7 }}>
                           {u?.email || ""}
                         </Typography>
@@ -115,5 +115,6 @@ export default function StudentsTab({ teacher }) {
     </Card>
   );
 }
+
 
 

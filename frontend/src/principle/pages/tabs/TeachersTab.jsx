@@ -120,7 +120,7 @@ export default function TeachersTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-          <Typography fontWeight={900}>Teachers</Typography>
+          <Typography fontWeight={600}>Teachers</Typography>
           <Button variant="outlined" startIcon={<RefreshRoundedIcon />} disabled={loading} onClick={loadTeachers}>
             Refresh
           </Button>
@@ -214,7 +214,7 @@ export default function TeachersTab() {
                 items.map((t) => (
                   <TableRow key={t.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{t.name || "-"}</Typography>
+                      <Typography fontWeight={500}>{t.name || "-"}</Typography>
                       <Typography variant="caption" sx={{ opacity: 0.7 }}>
                         {t.email || ""}
                       </Typography>
@@ -269,9 +269,9 @@ export default function TeachersTab() {
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)", flex: 1 }}>
                     <CardContent>
-                      <Typography fontWeight={900}>Basic</Typography>
+                      <Typography fontWeight={600}>Basic</Typography>
                       <Divider sx={{ my: 1.5 }} />
-                      <Typography fontWeight={800}>{activeTeacher.name}</Typography>
+                      <Typography fontWeight={500}>{activeTeacher.name}</Typography>
                       <Typography variant="body2" sx={{ opacity: 0.8 }}>
                         {activeTeacher.email}
                       </Typography>
@@ -291,7 +291,7 @@ export default function TeachersTab() {
                   </Card>
                   <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)", flex: 1 }}>
                     <CardContent>
-                      <Typography fontWeight={900}>Subjects & Departments</Typography>
+                      <Typography fontWeight={600}>Subjects & Departments</Typography>
                       <Divider sx={{ my: 1.5 }} />
                       <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
                         {(teacherSubjects || []).length ? teacherSubjects.map((s) => <Chip key={s} label={s} size="small" />) : <Chip size="small" label="No subjects" />}
@@ -306,13 +306,13 @@ export default function TeachersTab() {
 
                 <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
                   <CardContent>
-                    <Typography fontWeight={900}>Class Assignments</Typography>
+                    <Typography fontWeight={600}>Class Assignments</Typography>
                     <Divider sx={{ my: 1.5 }} />
                     {assignments?.length ? (
                       <Stack spacing={1}>
                         {assignments.map((a) => (
                           <Stack key={a.id} direction="row" justifyContent="space-between" sx={{ gap: 1, flexWrap: "wrap" }}>
-                            <Typography fontWeight={800}>
+                            <Typography fontWeight={500}>
                               {a?.class_subject?.class_info?.name
                                 ? `${a.class_subject.class_info.name} (${a.class_subject.class_info.section})`
                                 : a?.class_subject?.class_id || "-"}
@@ -339,5 +339,6 @@ export default function TeachersTab() {
     </Card>
   );
 }
+
 
 

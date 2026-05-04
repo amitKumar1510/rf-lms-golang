@@ -6,7 +6,7 @@ function StatCard({ label, value }) {
   return (
     <Card elevation={0} variant="outlined" sx={{ height: "100%", borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
-        <Typography variant="h4" fontWeight={900} sx={{ lineHeight: 1.1 }}>
+        <Typography variant="h4" fontWeight={600} sx={{ lineHeight: 1.1 }}>
           {value}
         </Typography>
         <Typography sx={{ opacity: 0.75, mt: 0.5 }}>{label}</Typography>
@@ -76,7 +76,7 @@ export default function OverviewTab({ me }) {
 function BoxText({ me }) {
   return (
     <Box sx={{ width: "100%" }}>
-      <Typography fontWeight={900} sx={{ mb: 0.8 }}>
+      <Typography fontWeight={600} sx={{ mb: 0.8 }}>
         Overview
       </Typography>
       <Divider sx={{ mb: 1.5 }} />
@@ -100,5 +100,6 @@ function BoxText({ me }) {
     </Box>
   );
 }
+
 
 

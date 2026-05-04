@@ -149,7 +149,7 @@ export default function DepartmentsTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={900}>Departments</Typography>
+          <Typography fontWeight={600}>Departments</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -189,7 +189,7 @@ export default function DepartmentsTab() {
                 items.map((d) => (
                   <TableRow key={d.id} hover>
                     <TableCell>
-                      <Typography fontWeight={800}>{d.name}</Typography>
+                      <Typography fontWeight={500}>{d.name}</Typography>
                     </TableCell>
                     <TableCell sx={{ maxWidth: 520 }}>
                       <Typography variant="body2" sx={{ opacity: 0.8 }} noWrap>
@@ -320,5 +320,6 @@ export default function DepartmentsTab() {
     </Card>
   );
 }
+
 
 

@@ -44,7 +44,7 @@ export default function MarksTab() {
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Total submissions
               </Typography>
-              <Typography variant="h5" fontWeight={900}>
+              <Typography variant="h5" fontWeight={600}>
                 {items?.length || 0}
               </Typography>
             </CardContent>
@@ -56,7 +56,7 @@ export default function MarksTab() {
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Graded
               </Typography>
-              <Typography variant="h5" fontWeight={900}>
+              <Typography variant="h5" fontWeight={600}>
                 {graded?.length || 0}
               </Typography>
             </CardContent>
@@ -68,7 +68,7 @@ export default function MarksTab() {
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Average score
               </Typography>
-              <Typography variant="h5" fontWeight={900}>
+              <Typography variant="h5" fontWeight={600}>
                 {avg == null ? "-" : `${avg.toFixed(1)}%`}
               </Typography>
             </CardContent>
@@ -79,7 +79,7 @@ export default function MarksTab() {
       <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
         <CardContent>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-            <Typography fontWeight={900}>Marks</Typography>
+            <Typography fontWeight={600}>Marks</Typography>
             <Button variant="outlined" startIcon={<RefreshRoundedIcon />} disabled={loading} onClick={load}>
               Refresh
             </Button>
@@ -110,7 +110,7 @@ export default function MarksTab() {
                   graded.map((s) => (
                     <TableRow key={s.id} hover>
                       <TableCell>
-                        <Typography fontWeight={800}>{s.assignment_title || s.assignment_id}</Typography>
+                        <Typography fontWeight={500}>{s.assignment_title || s.assignment_id}</Typography>
                       </TableCell>
                       <TableCell>{s.submission_type}</TableCell>
                       <TableCell>{s.submitted_at ? new Date(s.submitted_at).toLocaleString() : "-"}</TableCell>
@@ -141,5 +141,6 @@ export default function MarksTab() {
     </Stack>
   );
 }
+
 
 

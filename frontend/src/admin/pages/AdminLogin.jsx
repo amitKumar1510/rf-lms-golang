@@ -67,7 +67,7 @@ export default function AdminLogin() {
             <Stack spacing={2}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <LoginRoundedIcon color="primary" />
-                <Typography variant="h5" fontWeight={800}>
+                <Typography variant="h5" fontWeight={600}>
                   Login
                 </Typography>
               </Stack>

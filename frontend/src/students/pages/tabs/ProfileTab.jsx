@@ -6,7 +6,7 @@ function Field({ label, value }) {
       <Typography variant="caption" sx={{ opacity: 0.7 }}>
         {label}
       </Typography>
-      <Typography fontWeight={700}>{value != null && String(value).trim() !== "" ? String(value) : "-"}</Typography>
+      <Typography fontWeight={500}>{value != null && String(value).trim() !== "" ? String(value) : "-"}</Typography>
     </Stack>
   );
 }
@@ -23,7 +23,7 @@ export default function ProfileTab({ profile }) {
       <Grid item xs={12} md={6}>
         <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
           <CardContent>
-            <Typography fontWeight={900} sx={{ mb: 1 }}>
+            <Typography fontWeight={600} sx={{ mb: 1 }}>
               Student Details
             </Typography>
             <Divider sx={{ mb: 2 }} />
@@ -66,7 +66,7 @@ export default function ProfileTab({ profile }) {
       <Grid item xs={12} md={6}>
         <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
           <CardContent>
-            <Typography fontWeight={900} sx={{ mb: 1 }}>
+            <Typography fontWeight={600} sx={{ mb: 1 }}>
               Parent Details
             </Typography>
             <Divider sx={{ mb: 2 }} />
@@ -106,5 +106,7 @@ export default function ProfileTab({ profile }) {
     </Grid>
   );
 }
+
+
 
 

@@ -175,7 +175,7 @@ export default function ClassesContentTab() {
       <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
         <CardContent>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-            <Typography fontWeight={900}>Classes & Content</Typography>
+            <Typography fontWeight={600}>Classes & Content</Typography>
             <Button variant="outlined" startIcon={<RefreshRoundedIcon />} disabled={loading} onClick={loadClasses}>
               Refresh
             </Button>
@@ -239,7 +239,7 @@ export default function ClassesContentTab() {
 
       <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
         <CardContent>
-          <Typography fontWeight={900}>Content</Typography>
+          <Typography fontWeight={600}>Content</Typography>
           <Typography variant="body2" sx={{ opacity: 0.7, mt: 0.5 }}>
             {selectedClassSubject?.subject?.name ? `Subject: ${selectedClassSubject.subject.name}` : "Select a subject to view content"}
           </Typography>
@@ -258,7 +258,7 @@ export default function ClassesContentTab() {
                     <CardContent>
                       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ gap: 1, flexWrap: "wrap" }}>
                         <Stack spacing={0.25}>
-                          <Typography fontWeight={900}>{sm.name || "Submodule"}</Typography>
+                          <Typography fontWeight={600}>{sm.name || "Submodule"}</Typography>
                           {sm.description ? (
                             <Typography variant="body2" sx={{ opacity: 0.7 }}>
                               {sm.description}
@@ -278,7 +278,7 @@ export default function ClassesContentTab() {
                               <CardContent>
                                 <Stack spacing={1}>
                                   <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: "wrap" }}>
-                                    <Typography fontWeight={900}>{c.title || c.id}</Typography>
+                                    <Typography fontWeight={600}>{c.title || c.id}</Typography>
                                     {c.content_type ? <Chip size="small" label={c.content_type} /> : null}
                                   </Stack>
                                   {c.content_data ? (
@@ -313,5 +313,6 @@ export default function ClassesContentTab() {
     </Stack>
   );
 }
+
 
 

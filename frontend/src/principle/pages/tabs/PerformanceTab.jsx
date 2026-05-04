@@ -119,7 +119,7 @@ export default function PerformanceTab({ currentSession }) {
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Current session
               </Typography>
-              <Typography fontWeight={900}>{currentSession?.name || "-"}</Typography>
+              <Typography fontWeight={600}>{currentSession?.name || "-"}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -129,7 +129,7 @@ export default function PerformanceTab({ currentSession }) {
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Rows
               </Typography>
-              <Typography fontWeight={900}>{items?.length || 0}</Typography>
+              <Typography fontWeight={600}>{items?.length || 0}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -139,7 +139,7 @@ export default function PerformanceTab({ currentSession }) {
               <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 Avg %
               </Typography>
-              <Typography fontWeight={900}>{avgAll == null ? "-" : `${avgAll.toFixed(1)}%`}</Typography>
+              <Typography fontWeight={600}>{avgAll == null ? "-" : `${avgAll.toFixed(1)}%`}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -148,7 +148,7 @@ export default function PerformanceTab({ currentSession }) {
       <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
         <CardContent>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, flexWrap: "wrap", gap: 1 }}>
-            <Typography fontWeight={900}>Performance (Assignments)</Typography>
+            <Typography fontWeight={600}>Performance (Assignments)</Typography>
             <Button variant="outlined" startIcon={<RefreshRoundedIcon />} disabled={loading} onClick={load}>
               Refresh
             </Button>
@@ -206,12 +206,12 @@ export default function PerformanceTab({ currentSession }) {
                   items.map((r) => (
                     <TableRow key={r.class_subject_id} hover>
                       <TableCell>
-                        <Typography fontWeight={800}>
+                        <Typography fontWeight={500}>
                           {r.class_name ? `${r.class_name}${r.class_section ? ` (${r.class_section})` : ""}` : r.class_id}
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography fontWeight={800}>
+                        <Typography fontWeight={500}>
                           {r.subject_name ? `${r.subject_name}${r.subject_code ? ` (${r.subject_code})` : ""}` : r.subject_id}
                         </Typography>
                       </TableCell>
@@ -240,5 +240,6 @@ export default function PerformanceTab({ currentSession }) {
     </Stack>
   );
 }
+
 
 
