@@ -94,6 +94,13 @@ const navItems = [
     icon: ApartmentRoundedIcon,
   },
   {
+    id: "principles",
+    label: "Principal",
+    helper: "School principal",
+    path: "/subadmin/principles",
+    icon: SchoolOutlinedIcon,
+  },
+  {
     id: "teachers",
     label: "Teachers",
     helper: "Staff directory",
@@ -106,13 +113,6 @@ const navItems = [
     helper: "Student records",
     path: "/subadmin/students",
     icon: PeopleRoundedIcon,
-  },
-  {
-    id: "principles",
-    label: "Principles",
-    helper: "School principles",
-    path: "/subadmin/principles",
-    icon: SchoolOutlinedIcon,
   },
   {
     id: "settings",
@@ -203,7 +203,7 @@ export default function SubadminLayout() {
   };
 
   const sidebarContent = (
-    <Box className="flex h-full flex-col border-r border-white/10 bg-[#070c18]/95 backdrop-blur-xl">
+    <Box className="flex h-full min-h-0 flex-col overflow-y-auto border-r border-white/10 bg-[#070c18]/95 backdrop-blur-xl">
       <Box className="border-b border-white/10 px-5 py-5">
         <Stack direction="row" spacing={1.2} alignItems="center">
           <Avatar
@@ -281,7 +281,7 @@ export default function SubadminLayout() {
       </Drawer>
 
       <Box component="nav" className="hidden md:fixed md:inset-y-0 md:left-0 md:z-[1200] md:block md:w-[272px]">
-        <Box className="relative h-screen">{sidebarContent}</Box>
+        <Box className="relative h-screen overflow-hidden">{sidebarContent}</Box>
       </Box>
 
       <Box component="main" className="relative z-10 min-w-0 flex-1 md:ml-[272px]">

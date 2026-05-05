@@ -62,13 +62,12 @@ export default function NotificationsBell({ role }) {
 
   useEffect(() => {
     refreshUnread();
-    const t = setInterval(refreshUnread, 7000);
-    return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
     if (!open) return;
     loadInbox();
+    refreshUnread();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 

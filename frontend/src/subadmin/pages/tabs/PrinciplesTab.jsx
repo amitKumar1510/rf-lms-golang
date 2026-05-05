@@ -218,7 +218,7 @@ export default function PrinciplesTab() {
     <Card elevation={0} variant="outlined" sx={{ borderColor: "rgba(255,255,255,0.12)" }}>
       <CardContent>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, gap: 1, flexWrap: "wrap" }}>
-          <Typography fontWeight={600}>Principles</Typography>
+          <Typography fontWeight={600}>Principal</Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button onClick={openCreateDialog} variant="contained" startIcon={<AddRoundedIcon />}>
               Create
@@ -248,7 +248,7 @@ export default function PrinciplesTab() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Principle</TableCell>
+                <TableCell>Principal</TableCell>
                 <TableCell>Designation</TableCell>
                 <TableCell>School</TableCell>
                 <TableCell>Status</TableCell>
@@ -341,7 +341,7 @@ export default function PrinciplesTab() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={5}>
-                    <Typography sx={{ opacity: 0.7 }}>No principles found.</Typography>
+                    <Typography sx={{ opacity: 0.7 }}>No principal found.</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -351,7 +351,7 @@ export default function PrinciplesTab() {
 
         {/* Create dialog */}
         <Dialog open={openCreate} onClose={() => setOpenCreate(false)} fullWidth maxWidth="md">
-          <DialogTitle>Create Principle</DialogTitle>
+          <DialogTitle>Create Principal</DialogTitle>
           <DialogContent sx={{ pt: 1 }}>
             <Stack spacing={2} sx={{ mt: 1 }}>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
@@ -403,7 +403,7 @@ export default function PrinciplesTab() {
 
         {/* Edit dialog */}
         <Dialog open={openEdit} onClose={() => setOpenEdit(false)} fullWidth maxWidth="md">
-          <DialogTitle>Edit Principle</DialogTitle>
+          <DialogTitle>Edit Principal</DialogTitle>
           <DialogContent sx={{ pt: 1 }}>
             <Stack spacing={2} sx={{ mt: 1 }}>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>

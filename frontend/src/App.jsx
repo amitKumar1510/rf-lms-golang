@@ -24,12 +24,14 @@ import TeacherLayout from "./teacher/pages/TeacherLayout";
 import TeacherDashboard from "./teacher/pages/TeacherDashboard";
 import StudentLayout from "./students/pages/StudentLayout";
 import StudentDashboard from "./students/pages/StudentDashboard";
+import StudentProfilePage from "./students/pages/StudentProfilePage";
 import SubjectContentPage from "./students/pages/SubjectContentPage";
 import ParentLayout from "./parent/pages/ParentLayout";
 import ParentDashboard from "./parent/pages/ParentDashboard";
 import ParentLogin from "./parent/pages/ParentLogin";
 import PrincipleLayout from "./principle/pages/PrincipleLayout";
 import PrincipleDashboard from "./principle/pages/PrincipleDashboard";
+import PrincipleProfilePage from "./principle/pages/PrincipleProfilePage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -97,6 +99,7 @@ function App() {
 
       <Route path="/students" element={<StudentLayout />}>
         <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="profile" element={<StudentProfilePage />} />
         <Route path="subjects/:classSubjectId/content" element={<SubjectContentPage />} />
       </Route>
 
@@ -107,6 +110,7 @@ function App() {
 
       <Route path="/principle" element={<PrincipleLayout />}>
         <Route path="dashboard" element={<PrincipleDashboard />} />
+        <Route path="profile" element={<PrincipleProfilePage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
